@@ -13,7 +13,7 @@ export default function Footer() {
         <div className="space-y-3">
           <div className="flex items-center gap-2">
             <div className="w-7 h-7 rounded bg-zinc-900 border border-zinc-700 flex items-center justify-center font-bold text-white text-xs">
-              ⚡
+              {/*logo */}
             </div>
             <span className="font-bold text-white text-sm tracking-wide">IEEE JUSB</span>
           </div>
@@ -26,10 +26,10 @@ export default function Footer() {
         <div>
           <h4 className="text-white font-semibold mb-3 tracking-wider text-[11px] uppercase">Quicklinks</h4>
           <ul className="space-y-2">
-            <li><Link href="/register" className="hover:text-white transition-colors">Register for Summit</Link></li>
+            <li><Link href="/register" className="hover:text-white transition-colors">Register for MLAS 4.0</Link></li>
             <li><Link href="/login" className="hover:text-white transition-colors">Participant Portal</Link></li>
             <li><a href="#about" className="hover:text-white transition-colors">About IEEE JUSB</a></li>
-            <li><a href="#agenda" className="hover:text-white transition-colors">Summit Agenda</a></li>
+            <li><a href="#agenda" className="hover:text-white transition-colors"> About MLAS 4.0</a></li>
           </ul>
         </div>
 

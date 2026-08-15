@@ -62,7 +62,7 @@ export default function Navbar({
             <div className="flex flex-col leading-none">
               <span className="font-bold text-white text-sm tracking-wide">MLAS 4.0</span>
               <span className="text-[10px] font-sans text-purple-400 tracking-widest uppercase">
-                IEEE JUSB Presents
+                IEEE JUSB 
               </span>
             </div>
           </Link>
