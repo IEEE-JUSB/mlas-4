@@ -1,0 +1,18 @@
+{
+  "user": {
+    "name": "Swastik Saha",
+    "email": "swastik6666@gmail.com",
+    "phone": "+91 8481053501",
+    "college": "Jadavpur University",
+    "department": "Power Engineering",
+    "year": "2nd Year"
+  },
+  "registration": {
+    "id": "MLAS-2026-00142",
+    "status": "confirmed"
+  },
+  "payment": {
+    "amount": 999,
+    "status": "pending"
+  }
+}
