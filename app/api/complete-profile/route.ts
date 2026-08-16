@@ -6,19 +6,16 @@ const CompleteProfileSchema = z.object({
   phone: z
     .string()
     .regex(/^\d{10}$/, "Phone number should be 10 characters long"),
-    // .regex(/^\+?[0-9\s-]{10,15}$/, "Invalid phone number format"),
+  // .regex(/^\+?[0-9\s-]{10,15}$/, "Invalid phone number format"),
 
   college: z
     .string()
     .min(2, "College name must be at least 2 characters")
     .max(100),
 
-  department: z
-    .string()
-    .min(1, "Department is required"),
+  department: z.string().min(1, "Department is required"),
 
-  year: z
-    .coerce
+  year: z.coerce
     .number()
     .int()
     .min(1, "Year must be between 1 and 5")
@@ -36,7 +33,6 @@ const CompleteProfileSchema = z.object({
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    
 
     const validationResult = CompleteProfileSchema.safeParse(body);
 
@@ -44,10 +40,10 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         {
           error: "Invalid input data",
-          details: z.flattenError(validationResult.error).fieldErrors
+          details: z.flattenError(validationResult.error).fieldErrors,
           // details: validationResult.error.flatten().fieldErrors, decprecated ig
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -61,15 +57,20 @@ export async function POST(request: NextRequest) {
     } = await supabase.auth.getUser();
 
     if (authError || !user) {
-      return NextResponse.json(
-        { error: "Unauthorized" },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    //doing this just in case validatedData still contains extra data altho data should be sanitized 
-    const { phone, college, department, year, foodPreference, tShirtSize } = validatedData;
-    const updatePayload = { phone, college, department, year, foodPreference, tShirtSize };
+    //doing this just in case validatedData still contains extra data altho data should be sanitized
+    const { phone, college, department, year, foodPreference, tShirtSize } =
+      validatedData;
+    const updatePayload = {
+      phone,
+      college,
+      department,
+      year,
+      foodPreference,
+      tShirtSize,
+    };
     console.log("reached with data: ", updatePayload);
 
     const { error: dbError } = await supabase
@@ -90,12 +91,9 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json(
       {
-        error:
-          error instanceof Error
-            ? error.message
-            : "Internal server error",
+        error: error instanceof Error ? error.message : "Internal server error",
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

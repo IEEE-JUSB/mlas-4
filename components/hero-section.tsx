@@ -1,12 +1,12 @@
-'use client';
+"use client";
 
-import { useEffect, useRef, useState } from 'react';
-import Link from 'next/link';
-import { ArrowUpRight, CalendarDays, MapPin, ChevronDown } from 'lucide-react';
-import gsap from 'gsap';
-import { useTheme } from 'next-themes';
-import MoltenMetal from './MoltenMetal';
-import NeuralBackground from './neural-background';
+import { useEffect, useRef, useState } from "react";
+import Link from "next/link";
+import { ArrowUpRight, CalendarDays, MapPin, ChevronDown } from "lucide-react";
+import gsap from "gsap";
+import { useTheme } from "next-themes";
+import MoltenMetal from "./MoltenMetal";
+import NeuralBackground from "./neural-background";
 
 export default function HeroSection() {
   const badgeRef = useRef<HTMLDivElement>(null);
@@ -27,10 +27,10 @@ export default function HeroSection() {
     setMounted(true);
   }, []);
 
-  const isLight = mounted && resolvedTheme === 'light';
+  const isLight = mounted && resolvedTheme === "light";
 
   useEffect(() => {
-    const tl = gsap.timeline({ defaults: { ease: 'power3.out' } });
+    const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
 
     tl.fromTo(
       badgeRef.current,
@@ -38,28 +38,28 @@ export default function HeroSection() {
       { y: 0, opacity: 1, duration: 0.6 },
     )
       .fromTo(
-        titleRef.current?.querySelectorAll('.hero-word') ?? [],
+        titleRef.current?.querySelectorAll(".hero-word") ?? [],
         { y: 40, opacity: 0 },
         { y: 0, opacity: 1, duration: 0.8, stagger: 0.12 },
-        '-=0.3',
+        "-=0.3",
       )
       .fromTo(
         subtitleRef.current,
         { y: 20, opacity: 0 },
         { y: 0, opacity: 1, duration: 0.6 },
-        '-=0.4',
+        "-=0.4",
       )
       .fromTo(
         metaRef.current,
         { y: 16, opacity: 0 },
         { y: 0, opacity: 1, duration: 0.5 },
-        '-=0.35',
+        "-=0.35",
       )
       .fromTo(
         ctaRef.current,
         { y: 16, opacity: 0 },
         { y: 0, opacity: 1, duration: 0.5 },
-        '-=0.3',
+        "-=0.3",
       );
 
     // Scroll cue bounce
@@ -68,7 +68,7 @@ export default function HeroSection() {
       duration: 1.1,
       repeat: -1,
       yoyo: true,
-      ease: 'sine.inOut',
+      ease: "sine.inOut",
     });
 
     return () => {
@@ -88,9 +88,9 @@ export default function HeroSection() {
       <div className="absolute inset-0 w-full h-full">
         {mounted && (
           <MoltenMetal
-            color1={isLight ? '#ffffff' : '#050308'}
-            color2={isLight ? '#c4b5fd' : '#7c3aed'}
-            color3={isLight ? '#67e8f9' : '#22d3ee'}
+            color1={isLight ? "#ffffff" : "#050308"}
+            color2={isLight ? "#c4b5fd" : "#7c3aed"}
+            color3={isLight ? "#67e8f9" : "#22d3ee"}
             speed={0.3}
             scale={4.5}
             detail={4}
@@ -112,11 +112,11 @@ export default function HeroSection() {
       <NeuralBackground
         className={
           isLight
-            ? 'absolute inset-0 w-full h-full opacity-40'
-            : 'absolute inset-0 w-full h-full opacity-60 mix-blend-screen'
+            ? "absolute inset-0 w-full h-full opacity-40"
+            : "absolute inset-0 w-full h-full opacity-60 mix-blend-screen"
         }
-        colorA={isLight ? '124, 58, 237' : '168, 85, 247'}
-        colorB={isLight ? '8, 145, 178' : '34, 211, 238'}
+        colorA={isLight ? "124, 58, 237" : "168, 85, 247"}
+        colorB={isLight ? "8, 145, 178" : "34, 211, 238"}
       />
 
       {/* Faint grid overlay, fading toward the edges */}
@@ -124,13 +124,13 @@ export default function HeroSection() {
         className="absolute inset-0 opacity-[0.05] dark:opacity-[0.05]"
         style={{
           backgroundImage: isLight
-            ? 'linear-gradient(to right, #000000 1px, transparent 1px), linear-gradient(to bottom, #000000 1px, transparent 1px)'
-            : 'linear-gradient(to right, #ffffff 1px, transparent 1px), linear-gradient(to bottom, #ffffff 1px, transparent 1px)',
-          backgroundSize: '48px 48px',
+            ? "linear-gradient(to right, #000000 1px, transparent 1px), linear-gradient(to bottom, #000000 1px, transparent 1px)"
+            : "linear-gradient(to right, #ffffff 1px, transparent 1px), linear-gradient(to bottom, #ffffff 1px, transparent 1px)",
+          backgroundSize: "48px 48px",
           maskImage:
-            'radial-gradient(ellipse at center, black 0%, transparent 70%)',
+            "radial-gradient(ellipse at center, black 0%, transparent 70%)",
           WebkitMaskImage:
-            'radial-gradient(ellipse at center, black 0%, transparent 70%)',
+            "radial-gradient(ellipse at center, black 0%, transparent 70%)",
         }}
       />
 
@@ -149,12 +149,10 @@ export default function HeroSection() {
           ref={titleRef}
           className="text-5xl sm:text-7xl lg:text-8xl font-bold tracking-tight text-zinc-900 dark:text-white leading-[1.05]"
         >
-          <span className="hero-word inline-block">Machine</span>{' '}
-          <span className="hero-word inline-block">Learning</span>{' '}
-          <span className="hero-word inline-block">Accelerator</span>{' '}
-          <span className="hero-word inline-block">
-            Summit
-          </span>{' '}
+          <span className="hero-word inline-block">Machine</span>{" "}
+          <span className="hero-word inline-block">Learning</span>{" "}
+          <span className="hero-word inline-block">Accelerator</span>{" "}
+          <span className="hero-word inline-block">Summit</span>{" "}
           <span className="hero-word inline-block bg-gradient-to-r from-purple-500 to-cyan-500 dark:from-purple-400 dark:to-cyan-400 bg-clip-text text-transparent">
             4.0
           </span>
