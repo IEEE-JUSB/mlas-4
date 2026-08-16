@@ -2,7 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import {ArrowUpRight,Check,CreditCard,Lock,Pencil,UserRound,} from "lucide-react";
 
-import dashboardData from "../../test/data.json";
+import dashboardData from "../../test_data/data.json";
 const { user, registration, payment } = dashboardData;
 export default function DashboardPage() {
   return (
