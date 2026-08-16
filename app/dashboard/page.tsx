@@ -1,7 +1,8 @@
 import Image from "next/image";
 import Link from "next/link";
 import {ArrowUpRight,Check,CreditCard,Lock,Pencil,UserRound,} from "lucide-react";
-import logoPlaceholder from "./placeholder-logo.png";
+import logo from "./logo.png";
+import text from "./Text.png"
 import dashboardData from "./data.json";
 const { user, registration, payment } = dashboardData;
 export default function DashboardPage() {
@@ -14,11 +15,19 @@ export default function DashboardPage() {
         <header className="flex h-14 items-center justify-between border-b border-[#17243A]">
           <div className="flex items-center">
             <Image
-              src={logoPlaceholder}
+              src={logo}
               alt="MLAS 4.0"
               width={110}
               height={40}
               className="h-9 w-auto object-contain"
+              priority
+            />
+            <Image
+              src={text}
+              alt="MLAS 4.0"
+              width={220}
+              height={80}
+              className="h-24 w-auto object-contain"
               priority
             />
           </div>
