@@ -1,9 +1,8 @@
 import Image from "next/image";
 import Link from "next/link";
 import {ArrowUpRight,Check,CreditCard,Lock,Pencil,UserRound,} from "lucide-react";
-import logo from "./logo.png";
-import text from "./Text.png"
-import dashboardData from "./data.json";
+
+import dashboardData from "../../test/data.json";
 const { user, registration, payment } = dashboardData;
 export default function DashboardPage() {
   return (
@@ -15,7 +14,7 @@ export default function DashboardPage() {
         <header className="flex h-14 items-center justify-between border-b border-[#17243A]">
           <div className="flex items-center">
             <Image
-              src={logo}
+              src="/dashboard/logo.png"
               alt="MLAS 4.0"
               width={110}
               height={40}
@@ -23,7 +22,7 @@ export default function DashboardPage() {
               priority
             />
             <Image
-              src={text}
+              src="/dashboard/Text.png"
               alt="MLAS 4.0"
               width={220}
               height={80}
