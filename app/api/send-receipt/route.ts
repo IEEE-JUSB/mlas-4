@@ -10,13 +10,13 @@ export async function POST(request: NextRequest) {
   try {
     // Authenticate user
     const supabase = await createClient();
-    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    const {
+      data: { user },
+      error: authError,
+    } = await supabase.auth.getUser();
 
     if (authError || !user) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     // Parse request body
@@ -24,10 +24,7 @@ export async function POST(request: NextRequest) {
     const { paymentId } = body;
 
     if (!paymentId) {
-      return NextResponse.json(
-        { error: 'Payment ID is required' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: 'Payment ID is required' }, { status: 400 });
     }
 
     // Re-check payment status with Razorpay (don't trust frontend)
@@ -35,10 +32,7 @@ export async function POST(request: NextRequest) {
     const payment = await razorpay.payments.fetch(paymentId);
 
     if (!payment || payment.status !== 'captured') {
-      return NextResponse.json(
-        { error: 'Payment not confirmed or not found' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: 'Payment not confirmed or not found' }, { status: 400 });
     }
 
     // Save payment to user record with idempotency check
@@ -63,20 +57,14 @@ export async function POST(request: NextRequest) {
 
     if (userError || !userData) {
       console.error('Failed to fetch user details:', userError);
-      return NextResponse.json(
-        { error: 'Failed to fetch user details' },
-        { status: 500 }
-      );
+      return NextResponse.json({ error: 'Failed to fetch user details' }, { status: 500 });
     }
 
     // Get email from auth.users
     const userEmail = user.email;
     if (!userEmail) {
       console.error('User email not found');
-      return NextResponse.json(
-        { error: 'User email not found' },
-        { status: 500 }
-      );
+      return NextResponse.json({ error: 'User email not found' }, { status: 500 });
     }
 
     // Get membership type from payment notes
@@ -85,15 +73,16 @@ export async function POST(request: NextRequest) {
 
     if (!whatsappGroupLink) {
       console.error('WHATSAPP_GROUP_LINK not configured');
-      return NextResponse.json(
-        { error: 'WhatsApp group link not configured' },
-        { status: 500 }
-      );
+      return NextResponse.json({ error: 'WhatsApp group link not configured' }, { status: 500 });
     }
 
     // Extract payment details from Razorpay response
-    const paymentDate = payment.created_at 
-      ? new Date(payment.created_at * 1000).toLocaleDateString('en-IN', { day: '2-digit', month: '2-digit', year: 'numeric' })
+    const paymentDate = payment.created_at
+      ? new Date(payment.created_at * 1000).toLocaleDateString('en-IN', {
+          day: '2-digit',
+          month: '2-digit',
+          year: 'numeric',
+        })
       : undefined;
     const paymentMethod = payment.method || 'UPI';
     const bankName = payment.bank || payment.wallet || 'Razorpay';
@@ -101,18 +90,20 @@ export async function POST(request: NextRequest) {
 
     // Send receipt email with retry logic
     await retryWithBackoff(
-      () => sendReceiptEmail({
-        email: userEmail,
-        userName: userData.name || 'User',
-        paymentId,
-        amount: typeof payment.amount === 'string' ? parseInt(payment.amount, 10) : payment.amount,
-        membershipType,
-        whatsappGroupLink,
-        paymentDate,
-        paymentMethod,
-        bankName,
-        firmName,
-      }),
+      () =>
+        sendReceiptEmail({
+          email: userEmail,
+          userName: userData.name || 'User',
+          paymentId,
+          amount:
+            typeof payment.amount === 'string' ? parseInt(payment.amount, 10) : payment.amount,
+          membershipType,
+          whatsappGroupLink,
+          paymentDate,
+          paymentMethod,
+          bankName,
+          firmName,
+        }),
       { maxAttempts: 5 }
     );
 
@@ -124,7 +115,7 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error('Error sending receipt:', error);
     return NextResponse.json(
-      { 
+      {
         success: false,
         error: 'Failed to send receipt',
       },

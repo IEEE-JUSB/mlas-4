@@ -2,12 +2,12 @@ import { createClient } from '@/lib/supabase/server';
 
 /**
  * Database function for saving payment records with idempotency.
- * 
+ *
  * This function:
  * 1. Checks if payment is already recorded (idempotency)
  * 2. Writes PaymentID (Razorpay payment_id) to the user's row
  * 3. Sets status to 'payment completed'
- * 
+ *
  * Assumes SU1 (DB Table Setup) has been implemented with users table.
  */
 export async function savePaymentToUser(userId: string, paymentId: string): Promise<boolean> {
@@ -26,7 +26,11 @@ export async function savePaymentToUser(userId: string, paymentId: string): Prom
   }
 
   // If payment already recorded, return false (no-op)
-  if (existingUser && existingUser.payment_id === paymentId && existingUser.status === 'payment completed') {
+  if (
+    existingUser &&
+    existingUser.payment_id === paymentId &&
+    existingUser.status === 'payment completed'
+  ) {
     console.log('[DB] Payment already recorded for user:', { userId, paymentId });
     return false;
   }
@@ -34,7 +38,7 @@ export async function savePaymentToUser(userId: string, paymentId: string): Prom
   // Update user with payment details
   const { error: updateError } = await supabase
     .from('users')
-    .update({ 
+    .update({
       payment_id: paymentId,
       status: 'payment completed',
     })

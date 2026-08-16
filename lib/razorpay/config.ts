@@ -21,9 +21,9 @@ const EARLY_BIRD_SEAT_LIMITS: Record<MembershipType, number> = {
 export function getPricing(membershipType: MembershipType, forceRegular = false): PricingConfig {
   // Check if early-bird pricing applies
   const isEarlyBird = isEarlyBirdPeriod() && !forceRegular;
-  
+
   let finalAmount: number;
-  
+
   if (isEarlyBird) {
     // Use early bird pricing
     finalAmount = EARLY_BIRD_PRICING[membershipType];
@@ -31,7 +31,7 @@ export function getPricing(membershipType: MembershipType, forceRegular = false)
     // Use regular pricing
     finalAmount = REGULAR_PRICING[membershipType];
   }
-  
+
   return {
     amount: finalAmount,
     currency: 'INR',
@@ -41,15 +41,15 @@ export function getPricing(membershipType: MembershipType, forceRegular = false)
 
 function isEarlyBirdPeriod(): boolean {
   const cutoffDateStr = process.env.EARLY_BIRD_CUTOFF_DATE;
-  
+
   if (!cutoffDateStr || cutoffDateStr === 'YYYY-MM-DDTHH:mm:ssZ') {
     // No cutoff date configured, early-bird not active
     return false;
   }
-  
+
   const cutoffDate = new Date(cutoffDateStr);
   const now = new Date();
-  
+
   return now < cutoffDate;
 }
 

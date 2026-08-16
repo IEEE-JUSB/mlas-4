@@ -23,6 +23,7 @@
 ### 1. Order Creation - IEEE Member
 
 **Request:**
+
 ```bash
 POST /api/razorpay-payment
 Headers:
@@ -34,6 +35,7 @@ Body:
 ```
 
 **Expected Response (early bird pricing):**
+
 ```json
 {
   "order_id": "order_xxxxx",
@@ -44,6 +46,7 @@ Body:
 ```
 
 **Expected Response (regular pricing):**
+
 ```json
 {
   "order_id": "order_xxxxx",
@@ -56,6 +59,7 @@ Body:
 ### 2. Order Creation - Non-IEEE Member
 
 **Request:**
+
 ```bash
 POST /api/razorpay-payment
 Headers:
@@ -67,6 +71,7 @@ Body:
 ```
 
 **Expected Response (early bird pricing):**
+
 ```json
 {
   "order_id": "order_xxxxx",
@@ -77,6 +82,7 @@ Body:
 ```
 
 **Expected Response (regular pricing):**
+
 ```json
 {
   "order_id": "order_xxxxx",
@@ -89,6 +95,7 @@ Body:
 ### 3. Invalid Membership Type
 
 **Request:**
+
 ```bash
 POST /api/razorpay-payment
 Headers:
@@ -100,16 +107,19 @@ Body:
 ```
 
 **Expected Response:**
+
 ```json
 {
   "error": "Invalid membership type. Must be \"ieee\" or \"non_ieee\""
 }
 ```
+
 Status: 400
 
 ### 4. Early Bird Seat Limit Testing
 
 **Test seat exhaustion:**
+
 1. Set early bird cutoff date to future date
 2. Complete 10 IEEE payments (or 20 Non-IEEE payments)
 3. On the 11th IEEE payment (or 21st Non-IEEE), should automatically switch to regular pricing
@@ -118,6 +128,7 @@ Status: 400
 ### 5. Unauthorized Access
 
 **Request:**
+
 ```bash
 POST /api/razorpay-payment
 Headers:
@@ -129,16 +140,19 @@ Body:
 ```
 
 **Expected Response:**
+
 ```json
 {
   "error": "Unauthorized"
 }
 ```
+
 Status: 401
 
 ### 5. Signature Verification - Valid Payment
 
 **Request:**
+
 ```bash
 POST /api/razorpay-payment/verify
 Headers:
@@ -152,6 +166,7 @@ Body:
 ```
 
 **Expected Response:**
+
 ```json
 {
   "confirmed": true
@@ -159,6 +174,7 @@ Body:
 ```
 
 **Console Output (stubbed DB):**
+
 ```
 [STUBBED DB] savePaymentToUser called: {
   userId: "user_xxxxx",
@@ -170,6 +186,7 @@ Body:
 ### 6. Signature Verification - Invalid Signature
 
 **Request:**
+
 ```bash
 POST /api/razorpay-payment/verify
 Body:
@@ -181,6 +198,7 @@ Body:
 ```
 
 **Expected Response:**
+
 ```json
 {
   "confirmed": false,
@@ -191,6 +209,7 @@ Body:
 ### 7. Signature Verification - Missing Fields
 
 **Request:**
+
 ```bash
 POST /api/razorpay-payment/verify
 Body:
@@ -200,6 +219,7 @@ Body:
 ```
 
 **Expected Response:**
+
 ```json
 {
   "confirmed": false,
@@ -212,9 +232,9 @@ Body:
 Enter any of these on the Razorpay checkout — the outcome is determined by which
 button you click on the mock payment page afterward, not by the card number itself.
 
-| Card Type | Card Number | Expiry | CVV |
-|-----------|-------------|--------|-----|
-| Visa | 4111 1111 1111 1111 | Any future date | Any 3 digits |
+| Card Type  | Card Number         | Expiry          | CVV          |
+| ---------- | ------------------- | --------------- | ------------ |
+| Visa       | 4111 1111 1111 1111 | Any future date | Any 3 digits |
 | Mastercard | 5267 3181 8797 5449 | Any future date | Any 3 digits |
 
 After entering card details, Razorpay shows a mock bank page — click **Success**
@@ -256,6 +276,7 @@ trigger the corresponding outcome directly.
 ## Console Log Verification
 
 After successful payment verification, check console for stubbed DB function output:
+
 ```
 [STUBBED DB] savePaymentToUser called: {
   userId: "...",
@@ -285,6 +306,7 @@ This confirms the integration point is working correctly before SU1 lands.
 ### Prerequisites
 
 1. **Additional Environment Variables:**
+
    ```
    RAZORPAY_WEBHOOK_SECRET=your_webhook_secret
    WHATSAPP_GROUP_LINK=https://chat.whatsapp.com/your_invite_link
@@ -304,6 +326,7 @@ This confirms the integration point is working correctly before SU1 lands.
 ### Testing POST /api/send-receipt
 
 **Request:**
+
 ```bash
 POST /api/send-receipt
 Headers:
@@ -315,6 +338,7 @@ Body:
 ```
 
 **Expected Response (success):**
+
 ```json
 {
   "success": true,
@@ -323,6 +347,7 @@ Body:
 ```
 
 **Expected Response (already sent):**
+
 ```json
 {
   "success": true,
@@ -331,11 +356,13 @@ Body:
 ```
 
 **Expected Response (payment not confirmed):**
+
 ```json
 {
   "error": "Payment not confirmed or not found"
 }
 ```
+
 Status: 400
 
 ### Testing Webhooks
@@ -345,12 +372,14 @@ Since webhooks require a publicly reachable URL, use one of these methods:
 #### Method 1: Local Tunnel (ngrok)
 
 1. **Install ngrok:**
+
    ```bash
    # Download from https://ngrok.com/download
    # Or use: choco install ngrok (Windows)
    ```
 
 2. **Start ngrok:**
+
    ```bash
    ngrok http 3000
    ```

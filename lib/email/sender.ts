@@ -38,7 +38,9 @@ export async function sendReceiptEmail({
 
   const amountInRupees = amount / 100; // Convert from paise to rupees
   const membershipLabel = membershipType === 'ieee' ? 'IEEE Member' : 'Non-IEEE Member';
-  const currentDate = paymentDate || new Date().toLocaleDateString('en-IN', { day: '2-digit', month: '2-digit', year: 'numeric' });
+  const currentDate =
+    paymentDate ||
+    new Date().toLocaleDateString('en-IN', { day: '2-digit', month: '2-digit', year: 'numeric' });
   const amountInWords = convertAmountToWords(amountInRupees);
   const paymentAccount = `MLAS-4 Registration (${membershipLabel})`;
 
@@ -287,16 +289,16 @@ export async function sendReceiptEmail({
 function convertAmountToWords(amount: number): string {
   const rupees = Math.floor(amount);
   const paise = Math.round((amount - rupees) * 100);
-  
+
   let result = '';
-  
+
   if (rupees > 0) {
     const rupeesWords = toWords.toWords(rupees);
     // Capitalize first letter
     result = rupeesWords.charAt(0).toUpperCase() + rupeesWords.slice(1);
     result += ' Rupees';
   }
-  
+
   if (paise > 0) {
     if (result) {
       result += ' and ';
@@ -305,10 +307,10 @@ function convertAmountToWords(amount: number): string {
     result += paiseWords.charAt(0).toUpperCase() + paiseWords.slice(1);
     result += ' Paise';
   }
-  
+
   if (result) {
     result += ' Only';
   }
-  
+
   return result;
 }

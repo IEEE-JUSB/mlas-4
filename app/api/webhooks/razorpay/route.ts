@@ -10,39 +10,28 @@ export async function POST(request: NextRequest) {
   try {
     // Get raw body for signature verification
     const rawBody = await request.text();
-    
+
     // Get webhook signature from header
     const webhookSignature = request.headers.get('x-razorpay-signature');
     if (!webhookSignature) {
       console.error('Missing webhook signature');
-      return NextResponse.json(
-        { error: 'Invalid signature' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: 'Invalid signature' }, { status: 400 });
     }
 
     // Verify webhook signature
     const webhookSecret = process.env.RAZORPAY_WEBHOOK_SECRET;
     if (!webhookSecret) {
       console.error('RAZORPAY_WEBHOOK_SECRET not configured');
-      return NextResponse.json(
-        { error: 'Webhook not configured' },
-        { status: 500 }
-      );
+      return NextResponse.json({ error: 'Webhook not configured' }, { status: 500 });
     }
 
-    const expectedSignature = createHmac('sha256', webhookSecret)
-      .update(rawBody)
-      .digest('hex');
+    const expectedSignature = createHmac('sha256', webhookSecret).update(rawBody).digest('hex');
 
     // Constant-time comparison
     const isValid = constantTimeCompare(expectedSignature, webhookSignature);
     if (!isValid) {
       console.error('Invalid webhook signature');
-      return NextResponse.json(
-        { error: 'Invalid signature' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: 'Invalid signature' }, { status: 400 });
     }
 
     // Parse webhook payload
@@ -57,10 +46,7 @@ export async function POST(request: NextRequest) {
 
       if (!userId) {
         console.error('Missing userId in payment notes');
-        return NextResponse.json(
-          { error: 'Invalid payment data' },
-          { status: 400 }
-        );
+        return NextResponse.json({ error: 'Invalid payment data' }, { status: 400 });
       }
 
       // Save payment to user record with idempotency check
@@ -90,7 +76,7 @@ export async function POST(request: NextRequest) {
       // Get email from auth.users
       const { data: authUser } = await supabase.auth.admin.getUserById(userId);
       const userEmail = authUser.user?.email;
-      
+
       if (!userEmail) {
         console.error('[Webhook] User email not found');
         // Still return 200 to avoid webhook retries
@@ -107,22 +93,28 @@ export async function POST(request: NextRequest) {
       // Send receipt email with retry logic (non-blocking)
       // Don't await this to ensure quick webhook response
       retryWithBackoff(
-        () => sendReceiptEmail({
-          email: userEmail,
-          userName: userData.name || 'User',
-          paymentId,
-          amount: typeof payment.amount === 'string' ? parseInt(payment.amount, 10) : payment.amount,
-          membershipType,
-          whatsappGroupLink,
-          paymentDate: payment.created_at 
-            ? new Date(payment.created_at * 1000).toLocaleDateString('en-IN', { day: '2-digit', month: '2-digit', year: 'numeric' })
-            : undefined,
-          paymentMethod: payment.method || 'UPI',
-          bankName: payment.bank || payment.wallet || 'Razorpay',
-          firmName: 'IEEE Student Branch',
-        }),
+        () =>
+          sendReceiptEmail({
+            email: userEmail,
+            userName: userData.name || 'User',
+            paymentId,
+            amount:
+              typeof payment.amount === 'string' ? parseInt(payment.amount, 10) : payment.amount,
+            membershipType,
+            whatsappGroupLink,
+            paymentDate: payment.created_at
+              ? new Date(payment.created_at * 1000).toLocaleDateString('en-IN', {
+                  day: '2-digit',
+                  month: '2-digit',
+                  year: 'numeric',
+                })
+              : undefined,
+            paymentMethod: payment.method || 'UPI',
+            bankName: payment.bank || payment.wallet || 'Razorpay',
+            firmName: 'IEEE Student Branch',
+          }),
         { maxAttempts: 5 }
-      ).catch(error => {
+      ).catch((error) => {
         console.error('[Webhook] Failed to send receipt email:', error);
       });
 

@@ -5,6 +5,7 @@ This guide explains how to integrate the Razorpay payment flow into your fronten
 ## Overview
 
 The payment flow consists of these main steps:
+
 1. **IEEE Verification** - User submits IEEE membership details for admin verification
 2. **Admin Verification** - Admin verifies IEEE membership (admin dashboard - separate concern)
 3. **Create Order** - Call `/api/razorpay-payment` to create a Razorpay order
@@ -38,6 +39,7 @@ Add this to your layout or payment page:
 ```
 
 Or install via npm:
+
 ```bash
 npm install razorpay
 ```
@@ -49,10 +51,7 @@ Before allowing IEEE pricing, check if the user has been verified:
 ```typescript
 async function checkIEEEVerification() {
   const supabase = createClient();
-  const { data: userData, error } = await supabase
-    .from('users')
-    .select('is_ieee_member')
-    .single();
+  const { data: userData, error } = await supabase.from('users').select('is_ieee_member').single();
 
   if (error) {
     throw new Error('Failed to check verification status');
@@ -142,7 +141,7 @@ async function verifyPayment(razorpayResponse: any) {
   }
 
   const data = await response.json();
-  
+
   if (data.confirmed) {
     // Payment confirmed - send receipt
     await sendReceipt(razorpayResponse.razorpay_payment_id);
@@ -170,7 +169,7 @@ async function sendReceipt(paymentId: string) {
   }
 
   const data = await response.json();
-  
+
   if (data.success) {
     // Receipt sent successfully
     console.log('Receipt sent:', data.message);
@@ -216,17 +215,17 @@ export default function PaymentForm() {
 
   const handlePayment = async () => {
     setLoading(true);
-    
+
     try {
       // Step 1: Create order (includes verification check)
       const orderDetails = await createPaymentOrder(membershipType);
-      
+
       // Step 2: Open Razorpay checkout
       openRazorpayCheckout(orderDetails, {
         name: 'User Name',
         email: 'user@example.com',
       });
-      
+
     } catch (error: any) {
       console.error('Payment failed:', error);
       alert(error.message || 'Payment failed');
@@ -251,7 +250,7 @@ export default function PaymentForm() {
       const errorData = await response.json();
       throw new Error(errorData.error || 'Failed to create order');
     }
-    
+
     return await response.json();
   };
 
@@ -290,7 +289,7 @@ export default function PaymentForm() {
 
     if (!response.ok) throw new Error('Verification failed');
     const data = await response.json();
-    
+
     if (data.confirmed) {
       await sendReceipt(razorpayResponse.razorpay_payment_id);
       alert('Payment successful! Receipt sent.');
@@ -311,7 +310,7 @@ export default function PaymentForm() {
   return (
     <div>
       <h1>Workshop Registration</h1>
-      
+
       {checkingVerification ? (
         <p>Checking verification status...</p>
       ) : (
@@ -329,7 +328,7 @@ export default function PaymentForm() {
               {!isIEEEVerified && <span> - Verification pending</span>}
             </label>
           </div>
-          
+
           <div>
             <label>
               <input
@@ -341,7 +340,7 @@ export default function PaymentForm() {
               Non-IEEE Member (₹599 Early Bird / ₹699 Regular)
             </label>
           </div>
-          
+
           <button onClick={handlePayment} disabled={loading}>
             {loading ? 'Processing...' : 'Pay Now'}
           </button>
@@ -355,6 +354,7 @@ export default function PaymentForm() {
 ## Error Handling
 
 Always handle these error scenarios:
+
 - User not authenticated (401)
 - Invalid membership type (400)
 - IEEE membership not verified (403) - User must wait for admin verification
@@ -372,6 +372,7 @@ Always handle these error scenarios:
 ## Testing
 
 Use Razorpay sandbox test cards for testing:
+
 - Success: `4242 4242 4242 4242`
 - Failure: `4000 0000 0000 0002`
 
