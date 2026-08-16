@@ -15,7 +15,7 @@ const NAV_LINKS = [
 
 // Real, working signup route (Supabase-wired). Swap this if you build a
 // dedicated /register page with event-specific fields later.
-const REGISTER_HREF = '/auth/sign-up';
+const REGISTER_HREF = '/sign-up';
 
 export default function Navbar({
   authSlot,

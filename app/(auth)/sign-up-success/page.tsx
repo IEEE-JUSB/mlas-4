@@ -56,7 +56,7 @@ export default function Page() {
               asChild
               className="h-11 w-full rounded-xl font-semibold shadow-lg shadow-primary/20 transition-all hover:-translate-y-0.5 hover:shadow-primary/30"
             >
-              <Link href="/auth/login">Go to Login</Link>
+              <Link href="/login">Go to Login</Link>
             </Button>
 
             {/* Help text */}
