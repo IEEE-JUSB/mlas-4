@@ -1,8 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { savePaymentToUser } from '@/lib/db/payments';
+import { getRazorpayClient } from '@/lib/razorpay/client';
 import { VerifyPaymentRequest, VerifyPaymentResponse } from '@/types/payment';
 import { createHmac } from 'crypto';
+import { constantTimeCompare } from '@/lib/utils/crypto';
 
 export async function POST(request: NextRequest) {
   try {
@@ -51,7 +53,19 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(response);
     }
 
-    // Signature is valid - save payment to user record
+    // Signature is valid - verify order ownership
+    const razorpay = getRazorpayClient();
+    const order = await razorpay.orders.fetch(razorpay_order_id);
+
+    if (!order || order.notes?.userId !== user.id) {
+      const response: VerifyPaymentResponse = {
+        confirmed: false,
+        redirect: '/checkout',
+      };
+      return NextResponse.json(response);
+    }
+
+    // Save payment to user record
     await savePaymentToUser(user.id, razorpay_payment_id);
 
     const response: VerifyPaymentResponse = {
@@ -66,21 +80,4 @@ export async function POST(request: NextRequest) {
     };
     return NextResponse.json(response);
   }
-}
-
-/**
- * Constant-time comparison to prevent timing attacks
- * when comparing HMAC signatures
- */
-function constantTimeCompare(a: string, b: string): boolean {
-  if (a.length !== b.length) {
-    return false;
-  }
-
-  let result = 0;
-  for (let i = 0; i < a.length; i++) {
-    result |= a.charCodeAt(i) ^ b.charCodeAt(i);
-  }
-
-  return result === 0;
 }

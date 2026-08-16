@@ -35,6 +35,11 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Payment not confirmed or not found' }, { status: 400 });
     }
 
+    // Verify payment belongs to this user
+    if (payment.notes?.userId !== user.id) {
+      return NextResponse.json({ error: 'Payment does not belong to this user' }, { status: 403 });
+    }
+
     // Save payment to user record with idempotency check
     const wasSaved = await savePaymentToUser(user.id, paymentId);
 

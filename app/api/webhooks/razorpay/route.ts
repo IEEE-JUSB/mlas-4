@@ -5,6 +5,7 @@ import { sendReceiptEmail } from '@/lib/email/sender';
 import { retryWithBackoff } from '@/lib/utils/retry';
 import { createClient } from '@/lib/supabase/server';
 import { RazorpayWebhookPayload } from '@/types/payment';
+import { constantTimeCompare } from '@/lib/utils/crypto';
 
 export async function POST(request: NextRequest) {
   try {
@@ -39,7 +40,7 @@ export async function POST(request: NextRequest) {
 
     // Handle payment.captured event
     if (payload.event === 'payment.captured') {
-      const payment = payload.payment.entity;
+      const payment = payload.payload.payment.entity;
       const userId = payment.notes?.userId;
       const paymentId = payment.id;
       const membershipType = payment.notes?.membershipType || 'non_ieee';
@@ -50,7 +51,14 @@ export async function POST(request: NextRequest) {
       }
 
       // Save payment to user record with idempotency check
-      const wasSaved = await savePaymentToUser(userId, paymentId);
+      let wasSaved: boolean;
+      try {
+        wasSaved = await savePaymentToUser(userId, paymentId);
+      } catch (dbError) {
+        console.error('[Webhook] Failed to save payment to database:', dbError);
+        // Return 500 to trigger retry for DB failures
+        return NextResponse.json({ error: 'Database error saving payment' }, { status: 500 });
+      }
 
       // If payment was already saved, skip email sending (idempotency)
       if (!wasSaved) {
@@ -128,20 +136,4 @@ export async function POST(request: NextRequest) {
     // Still return 200 to avoid webhook retries for processing errors
     return NextResponse.json({ status: 'ok' });
   }
-}
-
-/**
- * Constant-time comparison to prevent timing attacks
- */
-function constantTimeCompare(a: string, b: string): boolean {
-  if (a.length !== b.length) {
-    return false;
-  }
-
-  let result = 0;
-  for (let i = 0; i < a.length; i++) {
-    result |= a.charCodeAt(i) ^ b.charCodeAt(i);
-  }
-
-  return result === 0;
 }

@@ -4,47 +4,38 @@ import { createClient } from '@/lib/supabase/server';
  * Database function for saving payment records with idempotency.
  *
  * This function:
- * 1. Checks if payment is already recorded (idempotency)
- * 2. Writes PaymentID (Razorpay payment_id) to the user's row
- * 3. Sets status to 'payment completed'
+ * 1. Atomically updates payment_id and status if payment_id is null
+ * 2. Returns false if payment was already recorded (no-op)
+ * 3. Returns true if payment was successfully saved
+ *
+ * Uses conditional update to prevent race conditions - only updates if payment_id is currently null.
+ * This ensures atomicity without requiring database transactions.
  *
  * Assumes SU1 (DB Table Setup) has been implemented with users table.
  */
 export async function savePaymentToUser(userId: string, paymentId: string): Promise<boolean> {
   const supabase = await createClient();
 
-  // Check if payment is already recorded (idempotency)
-  const { data: existingUser, error: fetchError } = await supabase
-    .from('users')
-    .select('payment_id, status')
-    .eq('id', userId)
-    .single();
-
-  if (fetchError && fetchError.code !== 'PGRST116') {
-    // PGRST116 is "not found", which is acceptable
-    throw new Error(`Failed to fetch user: ${fetchError.message}`);
-  }
-
-  // If payment already recorded, return false (no-op)
-  if (
-    existingUser &&
-    existingUser.payment_id === paymentId &&
-    existingUser.status === 'payment completed'
-  ) {
-    console.log('[DB] Payment already recorded for user:', { userId, paymentId });
-    return false;
-  }
-
-  // Update user with payment details
-  const { error: updateError } = await supabase
+  // Atomically update user with payment details using conditional update
+  // Only update if payment_id is currently null (prevents race conditions)
+  const { data: updatedUser, error: updateError } = await supabase
     .from('users')
     .update({
       payment_id: paymentId,
       status: 'payment completed',
     })
-    .eq('id', userId);
+    .eq('id', userId)
+    .is('payment_id', null) // Only update if payment_id is currently null
+    .select('payment_id')
+    .single();
 
   if (updateError) {
+    if (updateError.code === 'PGRST116') {
+      // Zero rows matched: either payment_id already set (already recorded)
+      // or userId doesn't exist. Either way, no-op.
+      console.log('[DB] Payment already recorded (or user not found):', { userId, paymentId });
+      return false;
+    }
     throw new Error(`Failed to update user: ${updateError.message}`);
   }
 

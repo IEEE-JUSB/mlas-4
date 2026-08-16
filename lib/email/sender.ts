@@ -14,6 +14,18 @@ interface SendReceiptEmailParams {
   firmName?: string;
 }
 
+// Helper function to escape HTML special characters
+function escapeHtml(text: string): string {
+  const map: Record<string, string> = {
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#039;',
+  };
+  return text.replace(/[&<>"']/g, (char) => map[char]);
+}
+
 export async function sendReceiptEmail({
   email,
   userName,
@@ -43,6 +55,9 @@ export async function sendReceiptEmail({
     new Date().toLocaleDateString('en-IN', { day: '2-digit', month: '2-digit', year: 'numeric' });
   const amountInWords = convertAmountToWords(amountInRupees);
   const paymentAccount = `MLAS-4 Registration (${membershipLabel})`;
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
+  const logoUrl = `${baseUrl}/ieee_logo_black_on_white.png`;
+  const escapedUserName = escapeHtml(userName);
 
   const mailOptions = {
     from: process.env.SMTP_FROM || process.env.SMTP_USER,
@@ -54,7 +69,7 @@ export async function sendReceiptEmail({
         <!-- Email Header -->
         <div style="text-align: center; margin-bottom: 30px;">
           <h2 style="margin: 0;">Payment Receipt - Workshop Registration</h2>
-          <p style="margin: 10px 0;">Dear ${userName},</p>
+          <p style="margin: 10px 0;">Dear ${escapedUserName},</p>
           <p style="margin: 0;">Thank you for your payment! Your registration has been successfully completed.</p>
         </div>
 
@@ -68,7 +83,7 @@ export async function sendReceiptEmail({
                   <td style="padding: 15px;">
                     <!-- IEEE Logo -->
                     <div style="text-align: left; margin-bottom: 10px;">
-                      <img src="/ieee_logo_black_on_white.png" alt="IEEE Logo" style="height: 60px;">
+                      <img src="${logoUrl}" alt="IEEE Logo" style="height: 60px;">
                     </div>
                     
                     <!-- Money Receipt Header -->
@@ -99,7 +114,7 @@ export async function sendReceiptEmail({
                         <tr>
                           <td style="padding: 5px; font-weight: bold; font-size: 14px;">RECEIVED</td>
                           <td style="padding: 5px; font-size: 14px;">with thanks from Mr/s</td>
-                          <td style="padding: 5px; border-bottom: 1px solid #000; width: 150px;">${userName}</td>
+                          <td style="padding: 5px; border-bottom: 1px solid #000; width: 150px;">${escapedUserName}</td>
                         </tr>
                         <tr>
                           <td colspan="3" style="padding: 5px; border-bottom: 1px solid #000;"></td>
@@ -169,7 +184,7 @@ export async function sendReceiptEmail({
                   <td style="padding: 15px;">
                     <!-- IEEE Logo -->
                     <div style="text-align: left; margin-bottom: 10px;">
-                      <img src="/ieee_logo_black_on_white.png" alt="IEEE Logo" style="height: 60px;">
+                      <img src="${logoUrl}" alt="IEEE Logo" style="height: 60px;">
                     </div>
                     
                     <!-- Money Receipt Header -->
@@ -201,7 +216,7 @@ export async function sendReceiptEmail({
                         <tr>
                           <td style="padding: 5px; font-weight: bold; font-size: 14px;">RECEIVED</td>
                           <td style="padding: 5px; font-size: 14px;">with thanks from Mr/s</td>
-                          <td style="padding: 5px; border-bottom: 1px solid #000; width: 150px;">${userName}</td>
+                          <td style="padding: 5px; border-bottom: 1px solid #000; width: 150px;">${escapedUserName}</td>
                         </tr>
                         <tr>
                           <td colspan="3" style="padding: 5px; border-bottom: 1px solid #000;"></td>

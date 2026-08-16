@@ -38,7 +38,7 @@ export interface SendReceiptResponse {
   message?: string;
 }
 
-export interface RazorpayWebhookEvent {
+export interface RazorpayWebhookPayload {
   event: string;
   payload: {
     payment: {
@@ -48,31 +48,14 @@ export interface RazorpayWebhookEvent {
         currency: string;
         status: string;
         order_id: string;
+        created_at?: number;
+        method?: string;
+        bank?: string;
+        wallet?: string;
         notes: {
           userId?: string;
           membershipType?: string;
         };
-      };
-    };
-  };
-}
-
-export interface RazorpayWebhookPayload {
-  event: string;
-  payment: {
-    entity: {
-      id: string;
-      amount: number;
-      currency: string;
-      status: string;
-      order_id: string;
-      created_at?: number;
-      method?: string;
-      bank?: string;
-      wallet?: string;
-      notes: {
-        userId?: string;
-        membershipType?: string;
       };
     };
   };
