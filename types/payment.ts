@@ -27,3 +27,49 @@ export interface PricingConfig {
   currency: string;
   isEarlyBird: boolean;
 }
+
+// BE3 Types
+export interface SendReceiptRequest {
+  paymentId: string;
+}
+
+export interface SendReceiptResponse {
+  success: boolean;
+  message?: string;
+}
+
+export interface RazorpayWebhookEvent {
+  event: string;
+  payload: {
+    payment: {
+      entity: {
+        id: string;
+        amount: number;
+        currency: string;
+        status: string;
+        order_id: string;
+        notes: {
+          userId?: string;
+          membershipType?: string;
+        };
+      };
+    };
+  };
+}
+
+export interface RazorpayWebhookPayload {
+  event: string;
+  payment: {
+    entity: {
+      id: string;
+      amount: number;
+      currency: string;
+      status: string;
+      order_id: string;
+      notes: {
+        userId?: string;
+        membershipType?: string;
+      };
+    };
+  };
+}

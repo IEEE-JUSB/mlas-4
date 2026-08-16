@@ -1,22 +1,36 @@
 import { MembershipType, PricingConfig } from '@/types/payment';
 
-// Base pricing in paise (Razorpay uses smallest currency unit)
-const BASE_PRICING: Record<MembershipType, number> = {
-  ieee: 50000, // ₹500
-  non_ieee: 58000, // ₹580
+// Early bird pricing in paise (Razorpay uses smallest currency unit)
+const EARLY_BIRD_PRICING: Record<MembershipType, number> = {
+  ieee: 49900, // ₹499
+  non_ieee: 59900, // ₹599
 };
 
-export function getPricing(membershipType: MembershipType): PricingConfig {
-  const baseAmount = BASE_PRICING[membershipType];
+// Regular pricing in paise
+const REGULAR_PRICING: Record<MembershipType, number> = {
+  ieee: 59900, // ₹599
+  non_ieee: 69900, // ₹699
+};
+
+// Early bird seat limits
+const EARLY_BIRD_SEAT_LIMITS: Record<MembershipType, number> = {
+  ieee: 10, // 10 early bird seats for IEEE
+  non_ieee: 20, // 20 early bird seats for Non-IEEE
+};
+
+export function getPricing(membershipType: MembershipType, forceRegular = false): PricingConfig {
+  // Check if early-bird pricing applies
+  const isEarlyBird = isEarlyBirdPeriod() && !forceRegular;
   
-  // Check if early-bird discount applies
-  const isEarlyBird = isEarlyBirdPeriod();
-  const discountPercent = isEarlyBird 
-    ? parseInt(process.env.EARLY_BIRD_DISCOUNT_PERCENT || '20', 10)
-    : 0;
+  let finalAmount: number;
   
-  const discountAmount = Math.floor((baseAmount * discountPercent) / 100);
-  const finalAmount = baseAmount - discountAmount;
+  if (isEarlyBird) {
+    // Use early bird pricing
+    finalAmount = EARLY_BIRD_PRICING[membershipType];
+  } else {
+    // Use regular pricing
+    finalAmount = REGULAR_PRICING[membershipType];
+  }
   
   return {
     amount: finalAmount,
@@ -38,3 +52,6 @@ function isEarlyBirdPeriod(): boolean {
   
   return now < cutoffDate;
 }
+
+// Export seat limits for checking availability
+export { EARLY_BIRD_SEAT_LIMITS };
