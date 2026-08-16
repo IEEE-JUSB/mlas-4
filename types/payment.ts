@@ -66,6 +66,10 @@ export interface RazorpayWebhookPayload {
       currency: string;
       status: string;
       order_id: string;
+      created_at?: number;
+      method?: string;
+      bank?: string;
+      wallet?: string;
       notes: {
         userId?: string;
         membershipType?: string;
