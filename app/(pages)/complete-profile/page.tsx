@@ -34,14 +34,7 @@ import { useState } from "react";
 
 type FoodPreference = "VEG" | "NON_VEG";
 
-const TSHIRT_SIZES = [
-  "XS",
-  "S",
-  "M",
-  "L",
-  "XL",
-  "XXL",
-] as const;
+const TSHIRT_SIZES = ["XS", "S", "M", "L", "XL", "XXL"] as const;
 
 const YEARS = [
   { value: "1", label: "1st Year" },
@@ -68,11 +61,13 @@ export default function CompleteProfilePage() {
   const [year, setYear] = useState("");
   const [department, setDepartment] = useState("");
 
-  const [foodPreference, setFoodPreference] =
-    useState<FoodPreference | null>(null);
+  const [foodPreference, setFoodPreference] = useState<FoodPreference | null>(
+    null,
+  );
 
-  const [tShirtSize, setTshirtSize] =
-    useState<(typeof TSHIRT_SIZES)[number] | null>(null);
+  const [tShirtSize, setTshirtSize] = useState<
+    (typeof TSHIRT_SIZES)[number] | null
+  >(null);
 
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<FormErrors>({});
@@ -99,21 +94,17 @@ export default function CompleteProfilePage() {
     }
 
     if (!foodPreference) {
-      newErrors.foodPreference =
-        "Please select a food preference.";
+      newErrors.foodPreference = "Please select a food preference.";
     }
 
     if (!tShirtSize) {
-      newErrors.tShirtSize =
-        "Please select your T-shirt size.";
+      newErrors.tShirtSize = "Please select your T-shirt size.";
     }
 
     return newErrors;
   }
 
-  async function handleSubmit(
-    e: React.FormEvent<HTMLFormElement>
-  ) {
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
 
     setErrors({});
@@ -146,9 +137,7 @@ export default function CompleteProfilePage() {
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(
-          data.error || "Failed to update profile."
-        );
+        throw new Error(data.error || "Failed to update profile.");
       }
 
       router.push("/dashboard");
@@ -180,12 +169,7 @@ export default function CompleteProfilePage() {
       "
     >
       <div className="mx-auto w-full max-w-2xl">
-        <form
-          onSubmit={handleSubmit}
-          noValidate
-          className="space-y-6"
-        >
-
+        <form onSubmit={handleSubmit} noValidate className="space-y-6">
           <Card
             className="
               border-border/60
@@ -215,9 +199,8 @@ export default function CompleteProfilePage() {
                   text-foreground/70
                 "
               >
-                Just a few details before you continue. This
-                information will be used for workshop
-                registration and event logistics.
+                Just a few details before you continue. This information will be
+                used for workshop registration and event logistics.
               </CardDescription>
             </CardHeader>
 
@@ -225,10 +208,7 @@ export default function CompleteProfilePage() {
               {/* Phone */}
 
               <div className="space-y-2">
-                <Label
-                  htmlFor="phone"
-                  className="text-base font-medium"
-                >
+                <Label htmlFor="phone" className="text-base font-medium">
                   Phone Number
                 </Label>
 
@@ -278,7 +258,7 @@ export default function CompleteProfilePage() {
                         `
                           border-destructive
                           focus-visible:ring-destructive/20
-                        `
+                        `,
                     )}
                   />
                 </div>
@@ -300,10 +280,7 @@ export default function CompleteProfilePage() {
               {/* College */}
 
               <div className="space-y-2">
-                <Label
-                  htmlFor="college"
-                  className="text-base font-medium"
-                >
+                <Label htmlFor="college" className="text-base font-medium">
                   College / Institution
                 </Label>
 
@@ -350,7 +327,7 @@ export default function CompleteProfilePage() {
                         `
                           border-destructive
                           focus-visible:ring-destructive/20
-                        `
+                        `,
                     )}
                   />
                 </div>
@@ -375,10 +352,7 @@ export default function CompleteProfilePage() {
                 {/* Department */}
 
                 <div className="space-y-2">
-                  <Label
-                    htmlFor="department"
-                    className="text-base font-medium"
-                  >
+                  <Label htmlFor="department" className="text-base font-medium">
                     Department
                   </Label>
 
@@ -425,7 +399,7 @@ export default function CompleteProfilePage() {
                           `
                             border-destructive
                             focus-visible:ring-destructive/20
-                          `
+                          `,
                       )}
                     />
                   </div>
@@ -447,10 +421,7 @@ export default function CompleteProfilePage() {
                 {/* Academic Year */}
 
                 <div className="space-y-2">
-                  <Label
-                    htmlFor="year"
-                    className="text-base font-medium"
-                  >
+                  <Label htmlFor="year" className="text-base font-medium">
                     Academic Year
                   </Label>
 
@@ -481,7 +452,7 @@ export default function CompleteProfilePage() {
                           `
                             border-destructive
                             focus:ring-destructive/20
-                          `
+                          `,
                       )}
                     >
                       <SelectValue placeholder="Select year" />
@@ -489,10 +460,7 @@ export default function CompleteProfilePage() {
 
                     <SelectContent>
                       {YEARS.map((item) => (
-                        <SelectItem
-                          key={item.value}
-                          value={item.value}
-                        >
+                        <SelectItem key={item.value} value={item.value}>
                           {item.label}
                         </SelectItem>
                       ))}
@@ -605,9 +573,7 @@ export default function CompleteProfilePage() {
 
               <div className="space-y-3">
                 <div>
-                  <Label className="text-base font-medium">
-                    T-shirt Size
-                  </Label>
+                  <Label className="text-base font-medium">T-shirt Size</Label>
 
                   <p className="mt-1 text-sm text-foreground/70">
                     Select your preferred T-shirt size.
@@ -656,7 +622,7 @@ export default function CompleteProfilePage() {
                               bg-primary/10
                               text-primary
                               shadow-[0_0_0_1px_hsl(var(--primary))]
-                            `
+                            `,
                         )}
                       >
                         {size}
@@ -739,10 +705,7 @@ export default function CompleteProfilePage() {
                 ) : (
                   <>
                     Continue
-                    <ChevronRight
-                      className="ml-2 h-5 w-5"
-                      aria-hidden="true"
-                    />
+                    <ChevronRight className="ml-2 h-5 w-5" aria-hidden="true" />
                   </>
                 )}
               </Button>
@@ -801,7 +764,7 @@ function ChoiceCard({
             border-primary
             bg-primary/10
             shadow-[0_0_0_1px_hsl(var(--primary))]
-          `
+          `,
       )}
     >
       <div className="flex items-start justify-between">
@@ -809,17 +772,13 @@ function ChoiceCard({
           <p
             className={cn(
               "text-base font-semibold",
-              selected
-                ? "text-primary"
-                : "text-foreground"
+              selected ? "text-primary" : "text-foreground",
             )}
           >
             {title}
           </p>
 
-          <p className="mt-1 text-sm text-foreground/70">
-            {description}
-          </p>
+          <p className="mt-1 text-sm text-foreground/70">{description}</p>
         </div>
 
         <div
@@ -833,9 +792,7 @@ function ChoiceCard({
               rounded-full
               border
             `,
-            selected
-              ? "border-primary bg-primary"
-              : "border-foreground/40"
+            selected ? "border-primary bg-primary" : "border-foreground/40",
           )}
         >
           {selected && (

@@ -102,7 +102,7 @@ export function LoginForm({
                   <Label htmlFor="password">Password</Label>
 
                   <Link
-                    href="/auth/forgot-password"
+                    href="/forgot-password"
                     className="text-xs font-medium text-primary underline-offset-4 transition-colors hover:text-primary/80 hover:underline"
                   >
                     Forgot password?
@@ -159,7 +159,7 @@ export function LoginForm({
             <div className="mt-6 text-center text-sm text-muted-foreground">
               Don&apos;t have an account?{" "}
               <Link
-                href="/auth/sign-up"
+                href="/sign-up"
                 className="font-semibold text-primary underline-offset-4 transition-colors hover:text-primary/80 hover:underline"
               >
                 Sign up
