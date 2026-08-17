@@ -1,21 +1,21 @@
-'use client';
+"use client";
 
-import { useEffect, useRef, useState } from 'react';
-import Link from 'next/link';
-import { Menu, X, ArrowUpRight } from 'lucide-react';
-import gsap from 'gsap';
-import { ThemeSwitcher } from './theme-switcher';
+import { useEffect, useRef, useState } from "react";
+import Link from "next/link";
+import { Menu, X, ArrowUpRight } from "lucide-react";
+import gsap from "gsap";
+import { ThemeSwitcher } from "./theme-switcher";
 
 const NAV_LINKS = [
-  { label: 'Home', href: '#hero' },
-  { label: 'About', href: '#about' },
-  { label: 'Agenda', href: '#agenda' },
-  { label: 'Contact', href: '#contact' },
+  { label: "Home", href: "#hero" },
+  { label: "About", href: "#about" },
+  { label: "Agenda", href: "#agenda" },
+  { label: "Contact", href: "#contact" },
 ];
 
 // Real, working signup route (Supabase-wired). Swap this if you build a
 // dedicated /register page with event-specific fields later.
-const REGISTER_HREF = '/auth/sign-up';
+const REGISTER_HREF = "/sign-up";
 
 export default function Navbar({
   authSlot,
@@ -32,15 +32,15 @@ export default function Navbar({
     gsap.fromTo(
       navRef.current,
       { y: -80, opacity: 0 },
-      { y: 0, opacity: 1, duration: 0.9, ease: 'power3.out', delay: 0.1 },
+      { y: 0, opacity: 1, duration: 0.9, ease: "power3.out", delay: 0.1 },
     );
   }, []);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 12);
     onScroll();
-    window.addEventListener('scroll', onScroll, { passive: true });
-    return () => window.removeEventListener('scroll', onScroll);
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
   return (
@@ -48,8 +48,8 @@ export default function Navbar({
       ref={navRef}
       className={`fixed top-0 inset-x-0 z-50 transition-all duration-300 ${
         scrolled
-          ? 'bg-black/70 backdrop-blur-md border-b border-zinc-900'
-          : 'bg-transparent border-b border-transparent'
+          ? "bg-black/70 backdrop-blur-md border-b border-zinc-900"
+          : "bg-transparent border-b border-transparent"
       }`}
     >
       <div className="max-w-7xl mx-auto px-6 h-16 flex items-center gap-6">
@@ -60,9 +60,11 @@ export default function Navbar({
               {/*logo*/}
             </div>
             <div className="flex flex-col leading-none">
-              <span className="font-bold text-white text-sm tracking-wide">MLAS 4.0</span>
+              <span className="font-bold text-white text-sm tracking-wide">
+                MLAS 4.0
+              </span>
               <span className="text-[10px] font-sans text-purple-400 tracking-widest uppercase">
-                IEEE JUSB 
+                IEEE JUSB
               </span>
             </div>
           </Link>

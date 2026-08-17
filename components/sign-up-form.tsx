@@ -200,7 +200,7 @@ export function SignUpForm({
         throw error;
       }
 
-      router.push("/auth/sign-up-success");
+      router.push("/sign-up-success");
     } catch (error: unknown) {
       setError(
         error instanceof Error
@@ -475,7 +475,7 @@ export function SignUpForm({
             <div className="mt-5 text-center text-sm text-muted-foreground">
               Already have an account?{" "}
               <Link
-                href="/auth/login"
+                href="/login"
                 className="font-semibold text-primary underline-offset-4 hover:underline"
               >
                 Login
