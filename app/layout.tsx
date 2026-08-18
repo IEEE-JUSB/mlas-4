@@ -16,8 +16,8 @@ const defaultUrl = process.env.VERCEL_URL
 
 export const metadata: Metadata = {
   metadataBase: new URL(defaultUrl),
-  title: "Next.js and Supabase Starter Kit",
-  description: "The fastest way to build apps with Next.js and Supabase",
+  title: "MLAS 4.0 | IEEE JUSB",
+  description: "Machine Learning Accelerator Summit 4.0 (MLAS) is a 2 day workshop on Machine Learning and AI, and anything new. Register for fun learning, events, workshops and networking related to this exciting domain.",
 };
 
 const geistSans = Geist({

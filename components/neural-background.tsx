@@ -1,6 +1,6 @@
-'use client';
+"use client";
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef } from "react";
 
 type Node = {
   x: number;
@@ -30,11 +30,11 @@ type Pulse = {
  * Respects prefers-reduced-motion by rendering a single static frame.
  */
 export default function NeuralBackground({
-  className = '',
+  className = "",
   density = 0.00009, // nodes per px^2, tuned for readability
   maxDistance = 140,
-  colorA = '168, 85, 247', // purple-500, connection lines
-  colorB = '34, 211, 238', // cyan-400, nodes + pulses
+  colorA = "168, 85, 247", // purple-500, connection lines
+  colorB = "34, 211, 238", // cyan-400, nodes + pulses
 }: {
   className?: string;
   density?: number;
@@ -47,11 +47,11 @@ export default function NeuralBackground({
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
-    const ctx = canvas.getContext('2d');
+    const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
     const prefersReducedMotion = window.matchMedia(
-      '(prefers-reduced-motion: reduce)',
+      "(prefers-reduced-motion: reduce)",
     ).matches;
 
     let width = 0;
@@ -142,7 +142,10 @@ export default function NeuralBackground({
                   targetOpacity: 0.15 + Math.random() * 0.35,
                 });
               }
-            } else if (existing.targetOpacity > 0 && Math.random() < PRUNE_CHANCE) {
+            } else if (
+              existing.targetOpacity > 0 &&
+              Math.random() < PRUNE_CHANCE
+            ) {
               existing.targetOpacity = 0;
             }
           } else if (existing) {
@@ -226,11 +229,11 @@ export default function NeuralBackground({
       resize();
       rafId = requestAnimationFrame(step);
     };
-    window.addEventListener('resize', handleResize);
+    window.addEventListener("resize", handleResize);
 
     return () => {
       cancelAnimationFrame(rafId);
-      window.removeEventListener('resize', handleResize);
+      window.removeEventListener("resize", handleResize);
     };
   }, [density, maxDistance, colorA, colorB]);
 

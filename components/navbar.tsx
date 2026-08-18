@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
@@ -7,10 +7,10 @@ import gsap from 'gsap';
 import { ThemeSwitcher } from './theme-switcher';
 
 const NAV_LINKS = [
-  { label: 'Home', href: '#hero' },
-  { label: 'About', href: '#about' },
-  { label: 'Agenda', href: '#agenda' },
-  { label: 'Contact', href: '#contact' },
+  { label: "Home", href: "#hero" },
+  { label: "About", href: "#about" },
+  { label: "Agenda", href: "#agenda" },
+  { label: "Contact", href: "#contact" },
 ];
 
 export default function Navbar({
@@ -28,15 +28,15 @@ export default function Navbar({
     gsap.fromTo(
       navRef.current,
       { y: -80, opacity: 0 },
-      { y: 0, opacity: 1, duration: 0.9, ease: 'power3.out', delay: 0.1 },
+      { y: 0, opacity: 1, duration: 0.9, ease: "power3.out", delay: 0.1 },
     );
   }, []);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 12);
     onScroll();
-    window.addEventListener('scroll', onScroll, { passive: true });
-    return () => window.removeEventListener('scroll', onScroll);
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
   return (

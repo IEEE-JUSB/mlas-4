@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import { useEffect, useRef } from 'react';
 import Link from 'next/link';
@@ -14,7 +14,7 @@ export default function HeroSection() {
   const scrollCueRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const tl = gsap.timeline({ defaults: { ease: 'power3.out' } });
+    const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
 
     tl.fromTo(
       badgeRef.current,
@@ -22,28 +22,28 @@ export default function HeroSection() {
       { y: 0, opacity: 1, duration: 0.6 },
     )
       .fromTo(
-        titleRef.current?.querySelectorAll('.hero-word') ?? [],
+        titleRef.current?.querySelectorAll(".hero-word") ?? [],
         { y: 40, opacity: 0 },
         { y: 0, opacity: 1, duration: 0.8, stagger: 0.12 },
-        '-=0.3',
+        "-=0.3",
       )
       .fromTo(
         subtitleRef.current,
         { y: 20, opacity: 0 },
         { y: 0, opacity: 1, duration: 0.6 },
-        '-=0.4',
+        "-=0.4",
       )
       .fromTo(
         metaRef.current,
         { y: 16, opacity: 0 },
         { y: 0, opacity: 1, duration: 0.5 },
-        '-=0.35',
+        "-=0.35",
       )
       .fromTo(
         ctaRef.current,
         { y: 16, opacity: 0 },
         { y: 0, opacity: 1, duration: 0.5 },
-        '-=0.3',
+        "-=0.3",
       );
 
     // Scroll cue bounce
@@ -52,7 +52,7 @@ export default function HeroSection() {
       duration: 1.1,
       repeat: -1,
       yoyo: true,
-      ease: 'sine.inOut',
+      ease: "sine.inOut",
     });
 
     return () => {
@@ -85,12 +85,10 @@ export default function HeroSection() {
           ref={titleRef}
           className="text-5xl sm:text-7xl lg:text-8xl font-bold tracking-tight text-zinc-900 dark:text-white leading-[1.05]"
         >
-          <span className="hero-word inline-block">Machine</span>{' '}
-          <span className="hero-word inline-block">Learning</span>{' '}
-          <span className="hero-word inline-block">Accelerator</span>{' '}
-          <span className="hero-word inline-block">
-            Summit
-          </span>{' '}
+          <span className="hero-word inline-block">Machine</span>{" "}
+          <span className="hero-word inline-block">Learning</span>{" "}
+          <span className="hero-word inline-block">Accelerator</span>{" "}
+          <span className="hero-word inline-block">Summit</span>{" "}
           <span className="hero-word inline-block bg-gradient-to-r from-purple-500 to-cyan-500 dark:from-purple-400 dark:to-cyan-400 bg-clip-text text-transparent">
             4.0
           </span>
