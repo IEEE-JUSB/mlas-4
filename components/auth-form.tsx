@@ -192,7 +192,7 @@ export function AuthForm({
   };
 
   return (
-    <div className={cn("mx-auto w-full max-w-sm", className)} {...props}>
+    <div className={cn("mx-auto w-full", className)} {...props}>
       <Card className="border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100 shadow-md">
         <CardHeader className="space-y-4 pb-4">
           {/* Segmented Mode Switcher */}
