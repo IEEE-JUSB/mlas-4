@@ -2,9 +2,9 @@
 @tailwind components;
 @tailwind utilities;
 
-@theme {
+/* @theme {
   --breakpoint-xs: 375px;
-}
+} */
 
 @layer base {
   :root {
