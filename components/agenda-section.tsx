@@ -14,10 +14,10 @@ export default function AgendaSection() {
       <div className="max-w-5xl mx-auto px-6">
         <div className="text-center mb-12">
         <div className="flex items-center justify-center gap-2 font-merriweather text-purple-600 dark:text-purple-300 tracking-wider">
-          <span className="relative flex h-2 w-2">
+          {/* <span className="relative flex h-2 w-2">
             <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-purple-400 opacity-75" />
             <span className="relative inline-flex h-2 w-2 rounded-full bg-purple-500" />
-          </span>
+          </span> */}
           Agenda
         </div>
           <h2 className="mt-3 text-3xl sm:text-4xl font-bold text-zinc-900 dark:text-white">
