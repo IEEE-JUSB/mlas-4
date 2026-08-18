@@ -9,6 +9,7 @@ import Navbar from "@/components/navbar";
 import Footer from "@/components/footer";
 import SiteBackground from "@/components/site-background";
 import "./globals.css";
+import { Toaster } from "@/components/ui/sonner"
 
 const defaultUrl = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`
@@ -68,6 +69,7 @@ export default function RootLayout({
               }
             />
             {children}
+            <Toaster />
             <Footer />
           </div>
         </ThemeProvider>

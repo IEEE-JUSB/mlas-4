@@ -80,7 +80,7 @@ export default function Navbar({
               <Image src="/logo.png" width={35} height={35} alt="Logo" priority />
             </div>
             <span className="font-bold text-zinc-900 dark:text-white tracking-tight">
-              IEEE JUSB
+              MLAS 4.0
             </span>
           </Link>
         </div>

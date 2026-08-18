@@ -11,10 +11,7 @@ export default function Footer() {
         {/* About Column */}
         <div className="space-y-3">
           <div className="flex items-center gap-2">
-            <div className="w-7 h-7 rounded bg-zinc-100 dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-700 flex items-center justify-center font-bold text-zinc-900 dark:text-white text-xs">
-              {/*logo*/}
-            </div>
-            <span className="font-bold text-zinc-900 dark:text-white text-sm tracking-wide">IEEE JUSB</span>
+            <span className="font-bold text-zinc-900 dark:text-white text-sm tracking-wide">About IEEE JUSB</span>
           </div>
           <p className="text-zinc-500 dark:text-zinc-400 text-sm leading-relaxed text-pretty">
             IEEE Jadavpur University Student Branch hosts workshops, hackathons, and research summits to bridge academics with industry innovation.
