@@ -21,12 +21,9 @@ export async function AuthButton() {
       <Button asChild size="sm" variant={"outline"}>
         <Link href="/login">Sign in</Link>
       </Button>
-<<<<<<< HEAD
       <Button asChild size="sm" variant={"default"}>
         <Link href="/sign-up">Sign up</Link>
       </Button>
-=======
->>>>>>> ce528f2 (feat: add login-register toggle auth flow)
     </div>
   );
 }
