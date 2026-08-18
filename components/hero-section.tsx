@@ -76,7 +76,7 @@ export default function HeroSection() {
           ref={badgeRef}
           className="inline-flex items-center gap-2 rounded-full border border-purple-500/30 bg-purple-500/5 px-4 py-1.5 mb-8"
         >
-          <span className="text-[11px] font-mono text-purple-600 dark:text-purple-300 tracking-widest uppercase">
+          <span className="text-[11px]  text-purple-600 dark:text-purple-300 tracking-widest uppercase">
             IEEE JUSB Presents
           </span>
         </div>
@@ -105,11 +105,11 @@ export default function HeroSection() {
 
         <div
           ref={metaRef}
-          className="mt-6 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-xs font-mono text-zinc-600 dark:text-slate-400 uppercase tracking-widest"
+          className="mt-6 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-xs text-zinc-600 dark:text-slate-400 uppercase tracking-widest"
         >
           <span className="inline-flex items-center gap-1.5">
             <CalendarDays className="w-3.5 h-3.5 text-purple-600 dark:text-purple-400" />
-            September 2026
+            12-13 September 2026
           </span>
           <span className="inline-flex items-center gap-1.5">
             <MapPin className="w-3.5 h-3.5 text-purple-600 dark:text-purple-400" />
@@ -136,9 +136,6 @@ export default function HeroSection() {
           </Link>
         </div>
 
-        <p className="mt-6 text-[11px] text-zinc-500 dark:text-slate-500">
-          Limited seats · Open to all engineering students
-        </p>
       </div>
 
       {/* Scroll cue */}
