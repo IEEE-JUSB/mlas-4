@@ -2,6 +2,10 @@
 @tailwind components;
 @tailwind utilities;
 
+@theme {
+  --breakpoint-xs: 375px;
+}
+
 @layer base {
   :root {
     --background: 222 47% 11%;
