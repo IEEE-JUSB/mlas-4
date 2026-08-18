@@ -6,10 +6,10 @@ export default function AboutSection() {
     >
       <div className="max-w-4xl mx-auto px-6 text-center">
         <div className="flex items-center justify-center gap-2 font-merriweather text-purple-600 dark:text-purple-300 tracking-wider">
-          <span className="relative flex h-2 w-2">
+          {/* <span className="relative flex h-2 w-2">
             <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-purple-400 opacity-75" />
             <span className="relative inline-flex h-2 w-2 rounded-full bg-purple-500" />
-          </span>
+          </span> */}
           About
         </div>
         <h2 className="mt-3 text-3xl sm:text-4xl font-bold text-zinc-900 dark:text-white">

@@ -26,6 +26,7 @@ import {
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { toast } from "sonner";
 
 type AuthMode = "login" | "register";
 
@@ -173,7 +174,23 @@ export function AuthForm({
       });
 
       if (error) throw error;
-      router.push("/auth/sign-up-success");
+      
+      toast("Check your email", {
+        description: "We've sent a confirmation link to " + email + ". Please check your inbox.",
+        action: {
+          label: "Close",
+          onClick: () => console.log("Toast closed"),
+        },
+      });
+
+      // Optional: Clear the form or switch them back to "login" mode
+      setMode("login");
+      setPassword("");
+      setRepeatPassword("");
+
+      // You can remove this router push if you want them to stay on the page
+      router.push("/auth/sign-up-success"); 
+
     } catch (err: unknown) {
       setError(
         err instanceof Error ? err.message : "Something went wrong. Please try again."
@@ -193,7 +210,7 @@ export function AuthForm({
 
   return (
     <div className={cn("mx-auto w-full", className)} {...props}>
-      <Card className="border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100 shadow-md">
+      <Card className="border border-zinc-200 dark:border-zinc-800 bg-transparent/5 dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100 shadow-md">
         <CardHeader className="space-y-4 pb-4">
           {/* Segmented Mode Switcher */}
           <div className="grid w-full grid-cols-2 rounded-lg bg-zinc-100 dark:bg-zinc-800 p-1 text-xs">
@@ -410,10 +427,10 @@ export function AuthForm({
             {/* Google Login (Both Modes) */}
             <div className="relative my-3">
               <div className="absolute inset-0 flex items-center">
-                <span className="w-full border-t border-zinc-200 dark:border-zinc-800" />
+                <span className="w-full border-t border-gray-300 dark:border-zinc-800" />
               </div>
               <div className="relative flex justify-center text-[10px] uppercase">
-                <span className="bg-white dark:bg-zinc-900 px-2 text-zinc-400 dark:text-zinc-500">
+                <span className="bg-transparent dark:bg-zinc-900 px-2 text-zinc-400 dark:text-zinc-500">
                   Or continue with
                 </span>
               </div>
@@ -423,7 +440,7 @@ export function AuthForm({
               type="button"
               variant="outline"
               onClick={handleGoogleLogin}
-              className="h-9 w-full text-xs font-medium border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
+              className="h-9 w-full text-xs font-medium border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 text-zinc-900 hover:text-zinc-800 dark:text-zinc-100 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
             >
               <svg className="mr-2 h-4 w-4" viewBox="0 0 24 24">
                 <path

@@ -18,9 +18,12 @@ export async function AuthButton() {
     </div>
   ) : (
     <div className="flex gap-2">
-      <Button asChild size="sm" variant={"default"}>
-        <Link href="/login">Sign in</Link>
-      </Button>
+      <Link
+        href="/register"
+        className="group inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-purple-500 to-cyan-400 px-7 py-2.5 text-sm font-semibold transition-transform hover:scale-105 duration-300 text-black"
+      >
+        Sign in
+      </Link>
     </div>
   );
 }
