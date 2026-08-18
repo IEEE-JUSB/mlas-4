@@ -110,6 +110,13 @@ export function AuthForm({
     </span>
   );
 
+  // =========================
+  // Email + Password Login
+  // =========================
+
+    const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     const supabase = createClient();
@@ -117,18 +124,59 @@ export function AuthForm({
     setError(null);
 
     try {
-      const { error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
+      const response = await fetch('/api/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password }),
       });
-      if (error) throw error;
-      router.push("/protected");
-    } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : "An error occurred");
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to sign in');
+      }
+
+      // Session cookies are automatically set by the /api/login response
+      router.push('/dashboard');
+      router.refresh(); // Refreshes Next.js router cache so components detect the active session
+    } catch (error: unknown) {
+      setError(error instanceof Error ? error.message : 'An error occurred');
     } finally {
       setIsLoading(false);
     }
   };
+
+  // const handleLogin = async (e: React.FormEvent) => {
+  //   e.preventDefault();
+
+  //   const supabase = createClient();
+
+  //   setIsLoading(true);
+  //   setError(null);
+
+  //   try {
+  //     const { error } = await supabase.auth.signInWithPassword({
+  //       email,
+  //       password,
+  //     });
+
+  //     if (error) {
+  //       throw error;
+  //     }
+
+  //     router.push("/protected");
+  //   } catch (error: unknown) {
+  //     setError(error instanceof Error ? error.message : "An error occurred");
+  //   } finally {
+  //     setIsLoading(false);
+  //   }
+  // };
+
+  // =========================
+  // Google Login
+  // =========================
 
   const handleGoogleLogin = async () => {
     const supabase = createClient();
@@ -146,13 +194,12 @@ export function AuthForm({
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
-    const supabase = createClient();
 
     setIsLoading(true);
     setError(null);
 
     if (passwordStrength < 5) {
-      setError("Please fulfill all password requirements before signing up.");
+      setError("Please fulfill all password requirements before creating your account.");
       setIsLoading(false);
       return;
     }
@@ -164,15 +211,28 @@ export function AuthForm({
     }
 
     try {
-      const { error } = await supabase.auth.signUp({
-        email,
-        password,
-        options: {
-          emailRedirectTo: `${window.location.origin}/protected`,
-          data: { name },
+      const response = await fetch('/api/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
         },
+        body: JSON.stringify({
+          email,
+          password,
+          name,
+        }),
       });
 
+      const data = await response.json();
+
+      if (!response.ok) {
+        // Handles status 400 or 500 errors from your route handler
+        throw new Error(data.error || 'Failed to register account.');
+      }
+
+      // Success response from API route -> redirect to confirmation page
+      router.push('/sign-up-success');
+    } catch (error: unknown) {
       if (error) throw error;
       
       toast("Check your email", {
@@ -193,12 +253,80 @@ export function AuthForm({
 
     } catch (err: unknown) {
       setError(
-        err instanceof Error ? err.message : "Something went wrong. Please try again."
+        error instanceof Error
+          ? error.message
+          : 'Something went wrong. Please try again.'
       );
     } finally {
       setIsLoading(false);
     }
   };
+
+  // const handleSignUp = async (e: React.FormEvent) => {
+  //   e.preventDefault();
+
+  //   const supabase = createClient();
+
+  //   setIsLoading(true);
+  //   setError(null);
+
+  //   // =========================
+  //   // Password Strength
+  //   // =========================
+
+  //   if (passwordStrength < 5) {
+  //     setError(
+  //       "Please fulfill all password requirements before creating your account.",
+  //     );
+
+  //     setIsLoading(false);
+  //     return;
+  //   }
+
+  //   // =========================
+  //   // Password Match
+  //   // =========================
+
+  //   if (password !== repeatPassword) {
+  //     setError("Passwords do not match.");
+
+  //     setIsLoading(false);
+  //     return;
+  //   }
+
+  //   try {
+  //     const { error } = await supabase.auth.signUp({
+  //       email,
+  //       password,
+
+  //       options: {
+  //         emailRedirectTo: `${window.location.origin}/protected`,
+
+  //         data: {
+  //           name: name,
+  //         },
+  //       },
+  //     });
+
+  //     if (error) {
+  //       throw error;
+  //     }
+
+  //     router.push("/auth/sign-up-success");
+  //   } catch (error: unknown) {
+  //     setError(
+  //       error instanceof Error
+  //         ? error.message
+  //         : "Something went wrong. Please try again.",
+  //     );
+  //   } finally {
+  //     setIsLoading(false);
+  //   }
+  // };
+
+  // =========================
+  // Submit Handler
+  // =========================
 
   const handleSubmit = async (e: React.FormEvent) => {
     if (mode === "login") {

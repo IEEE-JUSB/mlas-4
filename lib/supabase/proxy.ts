@@ -50,7 +50,15 @@ export async function updateSession(request: NextRequest) {
   if (
     request.nextUrl.pathname !== "/" &&
     !user &&
-    !request.nextUrl.pathname.startsWith("/login")
+    !request.nextUrl.pathname.startsWith("/login") &&
+    !request.nextUrl.pathname.startsWith("/sign-up") &&
+    !request.nextUrl.pathname.startsWith("/(auth)") && //**we dont need this ig
+    !request.nextUrl.pathname.startsWith("/api") && //**this line was not here before, 
+    !request.nextUrl.pathname.startsWith("/error") && //**and this */
+    !request.nextUrl.pathname.startsWith("/forgot-password") && //**and this
+    !request.nextUrl.pathname.startsWith("/update-password") //**also this
+    //**these are protected routes from which user does not get redirected 
+    //**if he is not authenticated/registered
   ) {
     // no user, potentially respond by redirecting the user to the login page
     const url = request.nextUrl.clone();
@@ -73,3 +81,6 @@ export async function updateSession(request: NextRequest) {
 
   return supabaseResponse;
 }
+
+//** asterisked comments are added by me(mondalsyamantak) 
+//** comments without asterisk are pregenerated

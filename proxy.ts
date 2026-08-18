@@ -1,8 +1,36 @@
 import { updateSession } from "@/lib/supabase/proxy";
-import { type NextRequest } from "next/server";
+import { type NextRequest, NextResponse } from "next/server";
+import { createClient } from "./lib/supabase/server";
 
 export async function proxy(request: NextRequest) {
-  return await updateSession(request);
+  const response = await updateSession(request);
+
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  const { pathname } = request.nextUrl;
+
+  // // Protect frontend page
+  // if (!user && pathname === "/complete-profile") {
+  //   return NextResponse.redirect(
+  //     new URL("/login", request.url)
+  //   );
+  // } //already being done by lib/supabase/proxy.ts, i checked 
+
+  const protectedApiRoutes = [
+    "/api/complete-profile","/api/logout"
+  ];
+
+  if (protectedApiRoutes.includes(pathname) && !user) {
+    return NextResponse.json(
+      { error: "Unauthorized access" },
+      { status: 401 }
+    );
+  }
+
+  return response;
 }
 
 export const config = {
