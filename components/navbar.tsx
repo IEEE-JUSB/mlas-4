@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
-import { Menu, X, ArrowUpRight } from 'lucide-react';
+import { Menu, X } from 'lucide-react';
 import gsap from 'gsap';
 import { ThemeSwitcher } from './theme-switcher';
 
@@ -12,10 +12,6 @@ const NAV_LINKS = [
   { label: 'Agenda', href: '#agenda' },
   { label: 'Contact', href: '#contact' },
 ];
-
-// Real, working signup route (Supabase-wired). Swap this if you build a
-// dedicated /register page with event-specific fields later.
-const REGISTER_HREF = '/auth/sign-up';
 
 export default function Navbar({
   authSlot,
@@ -48,7 +44,7 @@ export default function Navbar({
       ref={navRef}
       className={`fixed top-0 inset-x-0 z-50 transition-all duration-300 ${
         scrolled
-          ? 'bg-black/70 backdrop-blur-md border-b border-zinc-900'
+          ? 'bg-white/70 dark:bg-black/70 backdrop-blur-md border-b border-zinc-200 dark:border-zinc-900'
           : 'bg-transparent border-b border-transparent'
       }`}
     >
@@ -56,13 +52,13 @@ export default function Navbar({
         {/* Left: logo */}
         <div className="flex items-center gap-5 shrink-0">
           <Link href="/" className="flex items-center gap-2">
-            <div className="w-7 h-7 rounded bg-zinc-900 border border-zinc-700 flex items-center justify-center font-bold text-white text-xs">
+            <div className="w-7 h-7 rounded bg-zinc-100 dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-700 flex items-center justify-center font-bold text-zinc-900 dark:text-white text-xs">
               {/*logo*/}
             </div>
             <div className="flex flex-col leading-none">
-              <span className="font-bold text-white text-sm tracking-wide">MLAS 4.0</span>
-              <span className="text-[10px] font-sans text-purple-400 tracking-widest uppercase">
-                IEEE JUSB 
+              <span className="font-bold text-zinc-900 dark:text-white text-sm tracking-wide">MLAS 4.0</span>
+              <span className="text-[10px] font-mono text-purple-600 dark:text-purple-400 tracking-widest uppercase">
+                IEEE JUSB
               </span>
             </div>
           </Link>
@@ -74,29 +70,22 @@ export default function Navbar({
             <a
               key={link.href}
               href={link.href}
-              className="text-sm text-slate-300 hover:text-white transition-colors"
+              className="text-sm text-zinc-600 dark:text-slate-300 hover:text-zinc-900 dark:hover:text-white transition-colors"
             >
               {link.label}
             </a>
           ))}
         </div>
 
-        {/* Right: auth state, theme switcher, register CTA */}
+        {/* Right: auth state, theme switcher */}
         <div className="hidden md:flex items-center gap-4 shrink-0 ml-auto">
           {authSlot}
           <ThemeSwitcher />
-          <Link
-            href={REGISTER_HREF}
-            className="group inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r from-purple-500 to-cyan-400 px-5 py-2 text-sm font-semibold text-black transition-transform hover:scale-105"
-          >
-            Register Now
-            <ArrowUpRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
-          </Link>
         </div>
 
         {/* Mobile toggle */}
         <button
-          className="md:hidden ml-auto text-white"
+          className="md:hidden ml-auto text-zinc-900 dark:text-white"
           onClick={() => setOpen((v) => !v)}
           aria-label="Toggle menu"
         >
@@ -106,13 +95,13 @@ export default function Navbar({
 
       {/* Mobile panel */}
       {open && (
-        <div className="md:hidden bg-black/95 backdrop-blur-md border-t border-zinc-900 px-6 py-6 flex flex-col gap-5">
+        <div className="md:hidden bg-white/95 dark:bg-black/95 backdrop-blur-md border-t border-zinc-200 dark:border-zinc-900 px-6 py-6 flex flex-col gap-5">
           {NAV_LINKS.map((link) => (
             <a
               key={link.href}
               href={link.href}
               onClick={() => setOpen(false)}
-              className="text-sm text-slate-300 hover:text-white transition-colors"
+              className="text-sm text-zinc-600 dark:text-slate-300 hover:text-zinc-900 dark:hover:text-white transition-colors"
             >
               {link.label}
             </a>
@@ -121,14 +110,6 @@ export default function Navbar({
             {authSlot}
             <ThemeSwitcher />
           </div>
-          <Link
-            href={REGISTER_HREF}
-            onClick={() => setOpen(false)}
-            className="inline-flex items-center justify-center gap-1.5 rounded-full bg-gradient-to-r from-purple-500 to-cyan-400 px-5 py-2.5 text-sm font-semibold text-black"
-          >
-            Register Now
-            <ArrowUpRight className="w-4 h-4" />
-          </Link>
         </div>
       )}
     </nav>

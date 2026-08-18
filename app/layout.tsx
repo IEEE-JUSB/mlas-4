@@ -1,6 +1,13 @@
 import type { Metadata } from "next";
 import { Geist } from "next/font/google";
 import { ThemeProvider } from "next-themes";
+import { Suspense } from "react";
+import { EnvVarWarning } from "@/components/env-var-warning";
+import { AuthButton } from "@/components/auth-button";
+import { hasEnvVars } from "@/lib/utils";
+import Navbar from "@/components/navbar";
+import Footer from "@/components/footer";
+import SiteBackground from "@/components/site-background";
 import "./globals.css";
 
 const defaultUrl = process.env.VERCEL_URL
@@ -33,7 +40,27 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          {children}
+          {/* Fixed, page-wide animated backdrop — sits at z-0 behind every
+              section. Everything else below is stacked above it at z-10+
+              so the animation shows through wherever a section doesn't
+              paint its own opaque background. */}
+          <SiteBackground />
+
+          <div className="relative z-10">
+            <Navbar
+              authSlot={
+                !hasEnvVars ? (
+                  <EnvVarWarning />
+                ) : (
+                  <Suspense>
+                    <AuthButton />
+                  </Suspense>
+                )
+              }
+            />
+            {children}
+            <Footer />
+          </div>
         </ThemeProvider>
       </body>
     </html>

@@ -70,6 +70,13 @@ export default function NeuralBackground({
     const PULSE_CHANCE = 0.003; // per active connection, per frame
     const FADE_RATE = 0.06;
 
+    // Throttle drawing to ~30fps — still ticks requestAnimationFrame every
+    // native frame, but skips the actual canvas redraw on frames inside
+    // the same ~33ms window, cutting CPU cost roughly in half on 60Hz
+    // screens (more on high-refresh phones) without visibly choppier motion.
+    let lastRenderTime = 0;
+    const frameInterval = 1000 / 30;
+
     function resize() {
       const parent = canvas!.parentElement;
       width = parent ? parent.clientWidth : window.innerWidth;
@@ -80,7 +87,7 @@ export default function NeuralBackground({
       canvas!.style.height = `${height}px`;
       ctx!.setTransform(dpr, 0, 0, dpr, 0, 0);
 
-      const count = Math.min(90, Math.max(24, Math.floor(width * height * density)));
+      const count = Math.min(60, Math.max(20, Math.floor(width * height * density)));
       nodes = Array.from({ length: count }, () => ({
         x: Math.random() * width,
         y: Math.random() * height,
@@ -92,7 +99,14 @@ export default function NeuralBackground({
     }
 
     function step(t: number) {
-      const dtMs = lastT ? t - lastT : 16;
+      if (t - lastRenderTime < frameInterval) {
+        if (!prefersReducedMotion) {
+          rafId = requestAnimationFrame(step);
+        }
+        return;
+      }
+      const dtMs = lastRenderTime ? t - lastRenderTime : frameInterval;
+      lastRenderTime = t;
       lastT = t;
 
       ctx!.clearRect(0, 0, width, height);

@@ -134,7 +134,7 @@ const MoltenMetal = ({
       alpha: true,
       premultipliedAlpha: true,
       antialias: false,
-      dpr: Math.min(window.devicePixelRatio || 1, 2)
+      dpr: Math.min(window.devicePixelRatio || 1, 1.5)
     });
 
     const gl = renderer.gl;
@@ -212,14 +212,24 @@ const MoltenMetal = ({
     let isPageVisible = !document.hidden;
     const t0 = performance.now();
 
+    // Throttle to ~30fps: still ticks requestAnimationFrame every native
+    // frame (cheap), but skips the actual GPU render call on frames that
+    // land inside the same 33ms window, roughly halving render cost on
+    // 60Hz screens and more on 90/120Hz phones.
+    let lastRenderTime = 0;
+    const frameInterval = 1000 / 30;
+
     const loop = t => {
+      raf = requestAnimationFrame(loop);
+      if (t - lastRenderTime < frameInterval) return;
+      lastRenderTime = t;
+
       program.uniforms.iTime.value = (t - t0) * 0.001;
       currentMouse[0] += 0.05 * (targetMouse[0] - currentMouse[0]);
       currentMouse[1] += 0.05 * (targetMouse[1] - currentMouse[1]);
       program.uniforms.uMouse.value[0] = currentMouse[0];
       program.uniforms.uMouse.value[1] = currentMouse[1];
       renderer.render({ scene: mesh });
-      raf = requestAnimationFrame(loop);
     };
 
     const tryStart = () => {
