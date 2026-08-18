@@ -22,10 +22,10 @@ export default function SiteBackground() {
       <div className="absolute inset-0 w-full h-full">
         {mounted && (
           <MoltenMetal
-            color1={isLight ? "#050308" : "#000000"}
-            color2={isLight ? "#7c3aed" : "#c4b5fd"}
-            color3={isLight ? "#22d3ee" : "#67e8f9"}
-            speed={0.3}
+            color1={isLight ? "#FAFAF9" : "#000000"}
+            color2={isLight ? "#8b5cf6" : "#c4b5fd"}
+            color3={isLight ? "#06b6d4" : "#67e8f9"}
+            speed={0.5}
             scale={4.5}
             detail={4}
             glow={1.5}
