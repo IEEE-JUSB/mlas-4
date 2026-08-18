@@ -102,9 +102,13 @@ export default function HeroSection() {
           ref={subtitleRef}
           className="mt-6 text-lg sm:text-xl text-zinc-600 dark:text-slate-400 max-w-2xl mx-auto"
         >
-          Two days of hands-on workshops on LLMs, ReAct agents, LangGraph
-          orchestration &amp; MCP — building toward a live autonomous-agent
-          challenge. From first principles to production-grade pipelines.
+          Two days of{" "}
+          <span className="highlight dark:dark-highlight">hands-on</span>{" "}
+          workshops on LLMs, ReAct agents, LangGraph orchestration &amp; MCP —{" "}
+          <span className="highlight dark:dark-highlight">building</span> toward
+          a live autonomous-agent challenge. From first principles to
+          production-grade{" "}
+          <span className="highlight dark:dark-highlight">pipelines</span>.
         </p>
 
         <div
@@ -139,7 +143,6 @@ export default function HeroSection() {
             View Agenda
           </Link>
         </div>
-
       </div>
 
       {/* Scroll cue */}

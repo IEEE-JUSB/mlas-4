@@ -100,4 +100,16 @@
       ),
       hsl(var(--background));
   }
+
+  .highlight {
+    background: no-repeat url(https://s2.svgbox.net/pen-brushes.svg?ic=brush-5&color=FFA836);
+    margin: -2px -6px;
+    padding: 2px 6px;
+  }
+
+  .dark-highlight {
+    background: no-repeat url(https://s2.svgbox.net/pen-brushes.svg?ic=brush-5&color=345c4c);
+    margin: -2px -6px;
+    padding: 2px 6px;
+  }
 }
