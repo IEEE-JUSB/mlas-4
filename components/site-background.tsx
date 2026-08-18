@@ -17,22 +17,22 @@ export default function SiteBackground() {
   const isLight = mounted && resolvedTheme === "light";
 
   return (
-    <div className="fixed inset-0 z-0 w-screen h-screen overflow-hidden bg-white dark:bg-black pointer-events-none">
+    <div className="fixed inset-0 z-0 w-screen h-screen overflow-hidden bg-[#f2f0ef] dark:bg-black pointer-events-none">
       {/* Molten metal WebGL base */}
       <div className="absolute inset-0 w-full h-full">
         {mounted && (
           <MoltenMetal
-            color1={isLight ? "#ffffff" : "#050308"}
-            color2={isLight ? "#c4b5fd" : "#7c3aed"}
-            color3={isLight ? "#67e8f9" : "#22d3ee"}
+            color1={isLight ? "#050308" : "#000000"}
+            color2={isLight ? "#7c3aed" : "#c4b5fd"}
+            color3={isLight ? "#22d3ee" : "#67e8f9"}
             speed={0.3}
             scale={4.5}
             detail={4}
             glow={1.5}
             coreSize={0.11}
             swirl={1.1}
-            brightness={1.2}
-            opacity={isLight ? 0.5 : 0.75}
+            brightness={isLight ? 2.5 : 1.2}
+            opacity={isLight ? 0.25 : 0.65}
             mouseInteraction
             mouseStrength={0.25}
           />

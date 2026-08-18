@@ -13,9 +13,13 @@ export default function AgendaSection() {
     >
       <div className="max-w-5xl mx-auto px-6">
         <div className="text-center mb-12">
-          <span className="text-[11px] font-mono text-purple-600 dark:text-purple-400 tracking-widest uppercase">
-            Agenda
+        <div className="flex items-center justify-center gap-2 font-merriweather text-purple-600 dark:text-purple-300 tracking-wider">
+          <span className="relative flex h-2 w-2">
+            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-purple-400 opacity-75" />
+            <span className="relative inline-flex h-2 w-2 rounded-full bg-purple-500" />
           </span>
+          Agenda
+        </div>
           <h2 className="mt-3 text-3xl sm:text-4xl font-bold text-zinc-900 dark:text-white">
            Placeholder
           </h2>
@@ -30,7 +34,7 @@ export default function AgendaSection() {
               key={item.title}
               className="rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950 p-6"
             >
-              <span className="text-[10px] font-mono text-purple-600 dark:text-purple-400 tracking-widest uppercase">
+              <span className="font-merriweather text-purple-600 dark:text-purple-300 tracking-wider">
                 {item.day}
               </span>
               <h3 className="mt-2 text-lg font-semibold text-zinc-900 dark:text-white">
