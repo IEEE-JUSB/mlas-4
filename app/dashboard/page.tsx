@@ -10,8 +10,26 @@ async function DashboardContent() {
   const { data: { user }, error: userError } = await supabase.auth.getUser();
 
   if (userError || !user) {
-    redirect("/");
+    redirect("/login");
   }
+
+  // ====================================================================
+  // ADD ONLY WHEN IT IS FIGURED OUT HOW USERS IN SUPABASE IS FILLED PLS
+  // ====================================================================
+  
+  // const { data: profile } = await supabase
+  //   .from("users") 
+  //   .select("bio, username, phone") // Fields required for a "complete" profile
+  //   .eq("id", user.id)
+  //   .single();
+
+  // // 2. Check if the required fields are empty
+  // const isProfileIncomplete = !profile?.username || !profile?.bio;
+
+  // // 3. Redirect them if incomplete
+  // if (isProfileIncomplete) {
+  //   redirect("/complete-profile");
+  // }
 
   const { data: registration } = await supabase
     .from("registrations")
@@ -169,7 +187,7 @@ export default function DashboardPage() {
       <div className="pointer-events-none fixed inset-0 overflow-hidden">
         <div className="absolute left-1/2 top-[-300px] h-[600px] w-[900px] -translate-x-1/2 rounded-full bg-blue-500/[0.06] blur-[140px]" />
       </div>
-      
+
       <div className="relative mx-auto w-full max-w-6xl px-5 py-6 sm:px-8 lg:px-10 mt-8">
         <Suspense fallback={<p className="mt-10 text-sm text-zinc-500">Loading dashboard...</p>}>
           <DashboardContent />
