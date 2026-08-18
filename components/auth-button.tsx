@@ -1,19 +1,24 @@
 import Link from "next/link";
-import { Button } from "./ui/button";
+export const dynamic = "force-dynamic";
 import { createClient } from "@/lib/supabase/server";
 import { LogoutButton } from "./logout-button";
 
 export async function AuthButton() {
   const supabase = await createClient();
+  var firstName = "";
 
   // You can also use getUser() which will be slower.
   const { data } = await supabase.auth.getClaims();
 
   const user = data?.claims;
+  if (user != undefined) {
+    const metadata = user.user_metadata || {};
+    firstName = metadata.name ? metadata.name.split(" ")[0] : "Participant";
+  }
 
   return user ? (
-    <div className="flex items-center gap-4">
-      Hey, {user.email}!
+    <div className="flex items-center gap-4 text-black dark:text-white">
+      Hey, {firstName}!
       <LogoutButton />
     </div>
   ) : (

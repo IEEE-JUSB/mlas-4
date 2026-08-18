@@ -1,189 +1,201 @@
+import { Suspense } from "react";
 import Image from "next/image";
-import Link from "next/link";
-import {ArrowUpRight,Check,CreditCard,Lock,Pencil,UserRound,} from "lucide-react";
+import { redirect } from "next/navigation";
+import { ArrowUpRight, Check, CreditCard, Lock, Pencil, UserRound } from "lucide-react";
+import { createClient } from "@/lib/supabase/server";
 
-import dashboardData from "../../test_data/data.json";
-const { user, registration, payment } = dashboardData;
-export default function DashboardPage() {
+async function DashboardContent() {
+  const supabase = await createClient();
+
+  const { data: { user }, error: userError } = await supabase.auth.getUser();
+
+  if (userError || !user) {
+    redirect("/login");
+  }
+
+  // ====================================================================
+  // ADD ONLY WHEN IT IS FIGURED OUT HOW USERS IN SUPABASE IS FILLED PLS
+  // ====================================================================
+  
+  // const { data: profile } = await supabase
+  //   .from("users") 
+  //   .select("bio, username, phone") // Fields required for a "complete" profile
+  //   .eq("id", user.id)
+  //   .single();
+
+  // // 2. Check if the required fields are empty
+  // const isProfileIncomplete = !profile?.username || !profile?.bio;
+
+  // // 3. Redirect them if incomplete
+  // if (isProfileIncomplete) {
+  //   redirect("/complete-profile");
+  // }
+
+  const { data: registration } = await supabase
+    .from("registrations")
+    .select("*")
+    .eq("user_id", user.id)
+    .single();
+
+  const { data: payment } = await supabase
+    .from("payments")
+    .select("*")
+    .eq("user_id", user.id)
+    .single();
+
+  const metadata = user.user_metadata || {};
+  const firstName = metadata.name ? metadata.name.split(" ")[0] : "Participant";
+
   return (
-    <main className="min-h-screen bg-[#060B16] text-[#F5F7FB]">
-      <div className="pointer-events-none fixed inset-0 overflow-hidden">
-        <div className="absolute left-1/2 top-[-300px] h-[600px] w-[900px] -translate-x-1/2 rounded-full bg-[#1677FF]/[0.06] blur-[140px]" />
-      </div>
-      <div className="relative mx-auto w-full max-w-6xl px-5 py-6 sm:px-8 lg:px-10">
-        <header className="flex h-14 items-center justify-between border-b border-[#17243A]">
-          <div className="flex items-center">
-            <Image
-              src="/dashboard/logo.png"
-              alt="MLAS 4.0"
-              width={110}
-              height={40}
-              className="h-9 w-auto object-contain"
-              priority
-            />
-            <Image
-              src="/dashboard/Text.png"
-              alt="MLAS 4.0"
-              width={220}
-              height={80}
-              className="h-24 w-auto object-contain"
-              priority
-            />
-          </div>
-          <nav className="hidden items-center gap-1 sm:flex">
-            <Link href="/" className="rounded-md px-3 py-2 text-xs font-medium text-[#71819B] transition-colors hover:bg-[#101B2D] hover:text-white"
-            > Home </Link>
-            <Link href="/about" className="rounded-md px-3 py-2 text-xs font-medium text-[#71819B] transition-colors hover:bg-[#101B2D] hover:text-white"
-            > About </Link>
-            <Link href="/events" className="rounded-md px-3 py-2 text-xs font-medium text-[#71819B] transition-colors hover:bg-[#101B2D] hover:text-white"
-            > Events </Link>
-            <Link href="/schedule" className="rounded-md px-3 py-2 text-xs font-medium text-[#71819B] transition-colors hover:bg-[#101B2D] hover:text-white"
-            > Schedule </Link>
-            <Link href="/dashboard" className="rounded-md bg-[#101B2D] px-3 py-2 text-xs font-medium text-white"
-            > Dashboard </Link>
-          </nav>
-
-          <button className="rounded-md border border-[#1B2A42] px-3 py-2 text-xs font-medium text-[#8493AA] transition-colors hover:border-[#285083] hover:text-white">
-            Logout
-          </button>
-        </header>
-
-
-        <section className="relative py-10 sm:py-12">
-          <div className="max-w-2xl">
-            <div className="mb-3 flex items-center gap-2">
-              <span className="text-[10px] font-semibold uppercase tracking-[0.22em] text-[#5D7190]">
-                Participant Portal
-              </span>
-            </div>
-
-            <h1 className="text-3xl font-semibold tracking-[-0.03em] sm:text-4xl">
-              Welcome back,{" "}
-              <span className="text-[#1683FF]">
-                {user.name.split(" ")[0]}
-              </span>
-            </h1>
-          </div>
-        </section>
-
-
-        <section className="grid gap-4 lg:grid-cols-2">
-          <div className="relative overflow-hidden rounded-lg border border-[#172A45] bg-[#0A1322]">
-            <div className="absolute left-0 top-0 h-full w-[2px] bg-[#1683FF]" />
-            <div className="p-5 sm:p-6">
-              <div className="flex items-start justify-between gap-4">
-                <div>
-                  <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-[#60738F]">
-                    Registration
-                  </p>
-                  <h2 className="mt-2 text-lg font-semibold">
-                    Registration complete
-                  </h2>
-                </div>
-                <StatusBadge type="success">
-                  CONFIRMED
-                </StatusBadge>
-              </div>
-              <div className="mt-7 grid grid-cols-2 gap-5">
-                <InfoItem label="REGISTRATION ID">
-                  <span className="font-mono text-xs text-[#C4CFDE]">
-                    {registration.id}
-                  </span>
-                </InfoItem>
-                <InfoItem label="PROFILE">
-                  <span className="flex items-center gap-1.5 text-xs text-[#54D69B]">
-                    <Check className="h-3.5 w-3.5" />
-                    Complete
-                  </span>
-                </InfoItem>
-              </div>
-            </div>
+    <>
+      <section className="relative py-10 sm:py-12">
+        <div className="max-w-2xl">
+          <div className="mb-3 flex items-center gap-2">
+            <span className="text-[10px] font-semibold uppercase tracking-[0.22em] text-zinc-500 dark:text-zinc-400">
+              Participant Portal
+            </span>
           </div>
 
-          <div className="relative overflow-hidden rounded-lg border border-[#1C3558] bg-[#0A1322]">
-            <div className="absolute left-0 top-0 h-full w-[2px] bg-[#1683FF] shadow-[0_0_14px_#1683FF]" />
-            <div className="p-5 sm:p-6">
-              <div className="flex items-start justify-between gap-4">
-                <div>
-                  <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-[#60738F]">
-                    Payment
-                  </p>
-                  <h2 className="mt-2 text-lg font-semibold">
-                    Secure your seat
-                  </h2>
-                </div>
-                <StatusBadge type="warning">
-                  ACTION REQUIRED
-                </StatusBadge>
+          <h1 className="text-3xl font-semibold tracking-[-0.03em] sm:text-4xl">
+            Welcome back,{" "}
+            <span className="text-blue-600 dark:text-blue-500">
+              {firstName}
+            </span>
+          </h1>
+        </div>
+      </section>
+
+      <section className="grid gap-4 lg:grid-cols-2">
+        <div className="relative overflow-hidden rounded-lg border border-zinc-200 dark:border-zinc-800 bg-transparent/5 shadow-sm">
+          <div className="absolute left-0 top-0 h-full w-[2px] bg-blue-500" />
+          <div className="p-5 sm:p-6">
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-zinc-500 dark:text-zinc-400">
+                  Registration
+                </p>
+                <h2 className="mt-2 text-lg font-semibold text-zinc-900 dark:text-zinc-100">
+                  {registration ? "Registration complete" : "Registration pending"}
+                </h2>
               </div>
-              <div className="mt-6 flex items-end justify-between gap-4">
-                <div>
-                  <p className="text-[10px] uppercase tracking-[0.16em] text-[#60738F]">
-                    Registration fee
-                  </p>
-                  <p className="mt-1 text-2xl font-semibold">
-                    ₹{payment.amount}
-                  </p>
-                </div>
-                <button className="group/button flex items-center gap-2 rounded-md bg-[#1677FF] px-4 py-2.5 text-xs font-semibold text-white shadow-[0_0_20px_rgba(22,119,255,0.16)] transition-all hover:bg-[#2585FF] hover:shadow-[0_0_25px_rgba(22,119,255,0.25)]">
-                  <CreditCard className="h-3.5 w-3.5" />
-                  Book Your Seat
-                  <ArrowUpRight className="h-3.5 w-3.5 transition-transform group-hover/button:-translate-y-0.5 group-hover/button:translate-x-0.5" />
-                </button>
-              </div>
+              <StatusBadge type={registration ? "success" : "warning"}>
+                {registration ? "CONFIRMED" : "PENDING"}
+              </StatusBadge>
+            </div>
+            <div className="mt-7 grid grid-cols-2 gap-5">
+              <InfoItem label="REGISTRATION ID">
+                <span className="font-mono text-xs text-zinc-700 dark:text-zinc-300">
+                  {registration?.id || "N/A"}
+                </span>
+              </InfoItem>
+              <InfoItem label="PROFILE">
+                <span className="flex items-center gap-1.5 text-xs font-medium text-emerald-600 dark:text-emerald-400">
+                  <Check className="h-3.5 w-3.5" />
+                  Complete
+                </span>
+              </InfoItem>
             </div>
           </div>
-        </section>
+        </div>
 
-        <section className="mt-10 pb-12">
-          <SectionHeading
-            eyebrow="Participant"
-            title="Your Profile"
-            description=""
-          />
-          <div className="overflow-hidden rounded-lg border border-[#172A45] bg-[#0A1322]">
-            <div className="grid sm:grid-cols-2">
-              <ProfileField
-                icon={<UserRound className="h-4 w-4" />}
-                label="FULL NAME"
-                value={user.name}
-              />
-              <ProfileField
-                icon={<Lock className="h-4 w-4" />}
-                label="EMAIL"
-                value={user.email}
-                locked
-              />
-              <ProfileField
-                label="PHONE"
-                value={user.phone}
-              />
-              <ProfileField
-                label="COLLEGE"
-                value={user.college}
-              />
-              <ProfileField
-                label="DEPARTMENT"
-                value={user.department}
-              />
-              <ProfileField
-                label="YEAR"
-                value={user.year}
-              />
+        <div className="relative overflow-hidden rounded-lg border border-zinc-200 dark:border-zinc-800 bg-transparent/5 shadow-sm">
+          <div className="absolute left-0 top-0 h-full w-[2px] bg-blue-500 shadow-[0_0_14px_rgba(59,130,246,0.5)]" />
+          <div className="p-5 sm:p-6">
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-zinc-500 dark:text-zinc-400">
+                  Payment
+                </p>
+                <h2 className="mt-2 text-lg font-semibold text-zinc-900 dark:text-zinc-100">
+                  Secure your seat
+                </h2>
+              </div>
+              <StatusBadge type={payment?.status === "completed" ? "success" : "warning"}>
+                {payment?.status === "completed" ? "PAID" : "ACTION REQUIRED"}
+              </StatusBadge>
             </div>
-            <div className="flex flex-col gap-3 border-t border-[#172A45] bg-[#08111F] px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
-              <button className="flex items-center justify-center gap-2 rounded-md border border-[#1C3558] px-3 py-2 text-xs font-medium text-[#A9B6C9] transition-colors hover:border-[#2860A0] hover:bg-[#101D31] hover:text-white">
-                <Pencil className="h-3 w-3" />
-                Edit Profile
+            <div className="mt-6 flex items-end justify-between gap-4">
+              <div>
+                <p className="text-[10px] uppercase tracking-[0.16em] text-zinc-500 dark:text-zinc-400">
+                  Registration fee
+                </p>
+                <p className="mt-1 text-2xl font-semibold text-zinc-900 dark:text-zinc-100">
+                  ₹{payment?.amount || "0"}
+                </p>
+              </div>
+              <button className="group/button flex items-center gap-2 rounded-md bg-blue-600 px-4 py-2.5 text-xs font-semibold text-white shadow-lg shadow-blue-500/20 transition-all hover:bg-blue-700 hover:shadow-blue-500/30">
+                <CreditCard className="h-3.5 w-3.5" />
+                Book Your Seat
+                <ArrowUpRight className="h-3.5 w-3.5 transition-transform group-hover/button:-translate-y-0.5 group-hover/button:translate-x-0.5" />
               </button>
             </div>
           </div>
-        </section>
+        </div>
+      </section>
+
+      <section className="mt-10 pb-12">
+        <SectionHeading
+          eyebrow="Participant"
+          title="Your Profile"
+          description=""
+        />
+        <div className="overflow-hidden rounded-lg border border-zinc-200 dark:border-zinc-800 bg-transparent/5">
+          <div className="grid sm:grid-cols-2">
+            <ProfileField
+              icon={<UserRound className="h-4 w-4" />}
+              label="FULL NAME"
+              value={metadata.name || "N/A"}
+            />
+            <ProfileField
+              icon={<Lock className="h-4 w-4" />}
+              label="EMAIL"
+              value={user.email || "N/A"}
+              locked
+            />
+            <ProfileField
+              label="PHONE"
+              value={metadata.phone || "N/A"}
+            />
+            <ProfileField
+              label="COLLEGE"
+              value={metadata.college || "N/A"}
+            />
+            <ProfileField
+              label="DEPARTMENT"
+              value={metadata.department || "N/A"}
+            />
+            <ProfileField
+              label="YEAR"
+              value={metadata.year || "N/A"}
+            />
+          </div>
+          <div className="flex flex-col gap-3 border-t border-zinc-200 dark:border-zinc-800 bg-black/5 dark:bg-white/5 px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
+            <button className="flex items-center justify-center gap-2 rounded-md border border-zinc-300 dark:border-zinc-700 px-3 py-2 text-xs font-medium text-zinc-600 dark:text-zinc-400 transition-colors hover:bg-zinc-100 dark:hover:bg-zinc-800 hover:text-zinc-900 dark:hover:text-zinc-100">
+              <Pencil className="h-3 w-3" />
+              Edit Profile
+            </button>
+          </div>
+        </div>
+      </section>
+    </>
+  );
+}
+
+export default function DashboardPage() {
+  return (
+    <main className="min-h-screen bg-transparent/5 text-zinc-900 dark:text-zinc-100 transition-colors">
+      <div className="pointer-events-none fixed inset-0 overflow-hidden">
+        <div className="absolute left-1/2 top-[-300px] h-[600px] w-[900px] -translate-x-1/2 rounded-full bg-blue-500/[0.06] blur-[140px]" />
+      </div>
+
+      <div className="relative mx-auto w-full max-w-6xl px-5 py-6 sm:px-8 lg:px-10 mt-8">
+        <Suspense fallback={<p className="mt-10 text-sm text-zinc-500">Loading dashboard...</p>}>
+          <DashboardContent />
+        </Suspense>
       </div>
     </main>
   );
 }
-
 
 function SectionHeading({
   eyebrow,
@@ -196,21 +208,20 @@ function SectionHeading({
 }) {
   return (
     <div className="mb-4">
-      <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-[#1683FF]">
+      <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-blue-600 dark:text-blue-500">
         {eyebrow}
       </p>
-      <h2 className="mt-1 text-xl font-semibold tracking-tight">
+      <h2 className="mt-1 text-xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-100">
         {title}
       </h2>
       {description && (
-        <p className="mt-1 text-xs text-[#60738F]">
+        <p className="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
           {description}
         </p>
       )}
     </div>
   );
 }
-
 
 function StatusBadge({
   type,
@@ -221,8 +232,8 @@ function StatusBadge({
 }) {
   const styles =
     type === "success"
-      ? "border-[#1D6247] bg-[#0B2A20] text-[#54D69B]"
-      : "border-[#685322] bg-[#2A220D] text-[#E7BC55]";
+      ? "border-emerald-200 bg-emerald-50 text-emerald-700 dark:border-emerald-900/50 dark:bg-emerald-950/30 dark:text-emerald-400"
+      : "border-amber-200 bg-amber-50 text-amber-700 dark:border-amber-900/50 dark:bg-amber-950/30 dark:text-amber-400";
 
   return (
     <span
@@ -233,7 +244,6 @@ function StatusBadge({
   );
 }
 
-
 function InfoItem({
   label,
   children,
@@ -243,7 +253,7 @@ function InfoItem({
 }) {
   return (
     <div>
-      <p className="text-[9px] font-semibold tracking-[0.16em] text-[#536783]">
+      <p className="text-[9px] font-semibold tracking-[0.16em] text-zinc-500 dark:text-zinc-400">
         {label}
       </p>
 
@@ -266,8 +276,8 @@ function ProfileField({
   locked?: boolean;
 }) {
   return (
-    <div className="border-b border-[#172A45] p-5 sm:even:border-l">
-      <div className="flex items-center gap-1.5 text-[#536783]">
+    <div className="border-b border-zinc-200 dark:border-zinc-800 p-5 sm:even:border-l">
+      <div className="flex items-center gap-1.5 text-zinc-500 dark:text-zinc-400">
         {icon}
 
         <span className="text-[9px] font-semibold tracking-[0.16em]">
@@ -275,11 +285,11 @@ function ProfileField({
         </span>
 
         {locked && (
-          <Lock className="ml-auto h-3 w-3 text-[#40516A]" />
+          <Lock className="ml-auto h-3 w-3 text-zinc-400 dark:text-zinc-500" />
         )}
       </div>
 
-      <p className="mt-2 text-sm font-medium text-[#D7DFEA]">
+      <p className="mt-2 text-sm font-medium text-zinc-900 dark:text-zinc-100">
         {value}
       </p>
     </div>
