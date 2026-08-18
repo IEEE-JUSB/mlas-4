@@ -114,9 +114,6 @@ export function AuthForm({
   // Email + Password Login
   // =========================
 
-    const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault();
-
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     const supabase = createClient();
@@ -250,13 +247,6 @@ export function AuthForm({
 
       // You can remove this router push if you want them to stay on the page
       router.push("/auth/sign-up-success"); 
-
-    } catch (err: unknown) {
-      setError(
-        error instanceof Error
-          ? error.message
-          : 'Something went wrong. Please try again.'
-      );
     } finally {
       setIsLoading(false);
     }
