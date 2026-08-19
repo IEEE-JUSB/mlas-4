@@ -1,7 +1,7 @@
 import { Suspense } from "react";
 import Image from "next/image";
 import { redirect } from "next/navigation";
-import { ArrowUpRight, Check, CreditCard, Lock, Pencil, UserRound } from "lucide-react";
+import { ArrowUpRight, Check, CreditCard, Lock, LogOut, Pencil, UserRound } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 
 async function DashboardContent() {
@@ -46,9 +46,17 @@ async function DashboardContent() {
   const metadata = user.user_metadata || {};
   const firstName = metadata.name ? metadata.name.split(" ")[0] : "Participant";
 
+  // Next.js Server Action for handling logout
+  const handleLogout = async () => {
+    "use server";
+    const supabase = await createClient();
+    await supabase.auth.signOut();
+    redirect("/"); // or "/login" depending on your preference
+  };
+
   return (
     <>
-      <section className="relative py-10 sm:py-12">
+      <section className="relative py-10 sm:py-12 flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
         <div className="max-w-2xl">
           <div className="mb-3 flex items-center gap-2">
             <span className="text-[10px] font-semibold uppercase tracking-[0.22em] text-zinc-500 dark:text-zinc-400">
@@ -63,6 +71,16 @@ async function DashboardContent() {
             </span>
           </h1>
         </div>
+
+        <form action={handleLogout}>
+          <button 
+            type="submit" 
+            className="group inline-flex items-center gap-2 rounded-full border border-zinc-500 bg-red-500 px-6 py-2.5 text-sm font-semibold text-black transition-all duration-300 hover:scale-105 hover:bg-red-100 dark:border-red-900/50 dark:bg-red-950/30 dark:text-white dark:hover:bg-red-900/50"
+          >
+            <LogOut className="h-4 w-4" />
+            Logout
+          </button>
+        </form>
       </section>
 
       <section className="grid gap-4 lg:grid-cols-2">
