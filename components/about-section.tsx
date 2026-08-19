@@ -16,7 +16,7 @@ export default function AboutSection() {
           About MLAS 4.0
         </h2>
         <p className="mt-5 text-zinc-600 dark:text-slate-400 leading-relaxed">
-          Placeholder text
+          Sign in with Google to register for the workshop, access event passes, and manage your participant profile.
         </p>
       </div>
     </section>
