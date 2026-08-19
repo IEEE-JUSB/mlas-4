@@ -130,7 +130,7 @@ export default function HeroSection() {
           className="mt-10 flex flex-col sm:flex-row items-center gap-4"
         >
           <Link
-            href="/register"
+            href="/login"
             className="group inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-purple-500 to-cyan-400 px-7 py-3 text-sm font-semibold text-black transition-transform hover:scale-105 duration-300"
           >
             Register Now
