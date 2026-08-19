@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { Mail, Phone, MapPin, Linkedin, Instagram, Github, Globe } from 'lucide-react';
+import { Mail, Phone, MapPin, Linkedin, Instagram, Github, Globe, Twitter } from 'lucide-react';
 
 export default function Footer() {
   return (
@@ -33,12 +33,12 @@ export default function Footer() {
               </Link>
             </li>
             <li>
-              <a href="#about" className="hover:text-purple-600 dark:hover:text-purple-400 transition-colors">
+              <a href="https://www.ieee-jaduniv.in/" target='_blank' className="hover:text-purple-600 dark:hover:text-purple-400 transition-colors">
                 About IEEE JUSB
               </a>
             </li>
             <li>
-              <a href="#agenda" className="hover:text-purple-600 dark:hover:text-purple-400 transition-colors">
+              <a href="/#about" className="hover:text-purple-600 dark:hover:text-purple-400 transition-colors">
                 About MLAS 4.0
               </a>
             </li>
@@ -57,11 +57,11 @@ export default function Footer() {
             </li>
             <li className="flex items-center gap-2.5">
               <Phone className="w-4 h-4 text-purple-600 dark:text-purple-400 shrink-0" />
-              <span>+91 6297476257 (Chairperson)</span>
+              <span>+91 6297476257 </span>
             </li>
             <li className="flex items-start gap-2.5">
               <MapPin className="w-4 h-4 text-purple-600 dark:text-purple-400 shrink-0 mt-0.5" />
-              <span>TEQIP 402, Jadavpur University, Kolkata</span>
+              <span>Jadavpur University, Kolkata</span>
             </li>
           </ul>
         </div>
@@ -74,7 +74,7 @@ export default function Footer() {
           </p>
           <div className="flex items-center gap-2 pt-1">
             <a
-              href="https://linkedin.com"
+              href="https://www.linkedin.com/company/ieee-ju"
               target="_blank"
               rel="noreferrer"
               aria-label="LinkedIn"
@@ -83,7 +83,7 @@ export default function Footer() {
               <Linkedin className="w-4 h-4" />
             </a>
             <a
-              href="https://instagram.com"
+              href="https://www.instagram.com/_ieeeju/"
               target="_blank"
               rel="noreferrer"
               aria-label="Instagram"
@@ -92,13 +92,13 @@ export default function Footer() {
               <Instagram className="w-4 h-4" />
             </a>
             <a
-              href="https://github.com"
+              href="https://x.com/_ieeeju"
               target="_blank"
               rel="noreferrer"
               aria-label="GitHub"
               className="w-9 h-9 rounded-lg bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 flex items-center justify-center text-zinc-600 dark:text-zinc-400 hover:text-purple-600 dark:hover:text-purple-400 hover:border-purple-300 dark:hover:border-purple-800 transition-all"
             >
-              <Github className="w-4 h-4" />
+              <Twitter className="w-4 h-4" />
             </a>
             <a
               href="https://ieee-jaduniv.in"
