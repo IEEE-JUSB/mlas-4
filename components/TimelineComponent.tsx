@@ -76,12 +76,12 @@ const days = [
   },
 ];
 
-export default function Testing4Extended() {
+export default function TimelineComponent() {
   return (
     <div className="
-    w-screen min-h-screen relative
+    w-screen min-h-screen relative border-t
     ">
-    <div className="fixed inset-0 -z-10 pointer-events-none sm:block hidden">
+    {/* <div className="fixed inset-0 -z-10 pointer-events-none hidden">
     <GradientWaves
     horizonColor="#5227FF"
     waveColor="#FF9FFC"
@@ -104,7 +104,7 @@ export default function Testing4Extended() {
     grain
     grainIntensity={0.05}
     />
-    </div>
+    </div> */}
       <div className="relative z-10">
         <AgenticTimeline days={days} />
       </div>

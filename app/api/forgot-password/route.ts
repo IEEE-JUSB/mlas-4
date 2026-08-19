@@ -28,7 +28,6 @@ export async function POST(request: NextRequest) {
     // 2. Trigger Password Reset Email
     // Directs the link back to your app's callback handler or password update page
     const origin = new URL(request.url).origin;
-    console.log("fogpass", new URL(request.url));
     
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
       redirectTo: `${origin}/api/callback?next=/update-password`,

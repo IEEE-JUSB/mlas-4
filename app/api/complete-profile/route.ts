@@ -72,7 +72,6 @@ export async function POST(request: NextRequest) {
     //doing this just in case validatedData still contains extra data altho data should be sanitized 
     const { phone, college, department, year, foodPreference, tShirtSize } = validatedData;
     const updatePayload = { phone: phone, college: college, department: department, year, food_preference: foodPreference, tshirt_size: tShirtSize };
-    console.log("reached with data: ", updatePayload);
 
     const { error: dbError } = await supabaseAdmin
       .from("users")

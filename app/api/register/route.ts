@@ -41,8 +41,6 @@ export async function POST(request: NextRequest) {
 
     const validatedData = validationResult.data;
 
-    console.log("reached with data: ", validatedData)
-
     const supabase = await createClient();
 
 
