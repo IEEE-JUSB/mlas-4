@@ -7,14 +7,11 @@ export async function updateSession(request: NextRequest) {
     request,
   });
 
-  // If the env vars are not set, skip proxy check. You can remove this
-  // once you setup the project.
+  // If env vars are not set, skip proxy check.
   if (!hasEnvVars) {
     return supabaseResponse;
   }
 
-  // With Fluid compute, don't put this client in a global environment
-  // variable. Always create a new one on each request.
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!,
@@ -38,49 +35,24 @@ export async function updateSession(request: NextRequest) {
     },
   );
 
-  // Do not run code between createServerClient and
-  // supabase.auth.getClaims(). A simple mistake could make it very hard to debug
-  // issues with users being randomly logged out.
-
-  // IMPORTANT: If you remove getClaims() and you use server-side rendering
-  // with the Supabase client, your users may be randomly logged out.
+  // Get user session info
   const { data } = await supabase.auth.getClaims();
   const user = data?.claims;
 
-  if (
-    request.nextUrl.pathname !== "/" &&
-    !user &&
-    !request.nextUrl.pathname.startsWith("/login") &&
-    !request.nextUrl.pathname.startsWith("/sign-up") &&
-    !request.nextUrl.pathname.startsWith("/(auth)") && //**we dont need this ig
-    !request.nextUrl.pathname.startsWith("/api") && //**this line was not here before, 
-    !request.nextUrl.pathname.startsWith("/error") && //**and this */
-    !request.nextUrl.pathname.startsWith("/forgot-password") && //**and this
-    !request.nextUrl.pathname.startsWith("/update-password") //**also this
-    //**these are protected routes from which user does not get redirected 
-    //**if he is not authenticated/registered
-  ) {
-    // no user, potentially respond by redirecting the user to the login page
+  // Define routes that STRICTLY require authentication
+  const protectedRoutes = ["/dashboard", "/complete-profile"];
+
+  const isProtectedRoute = protectedRoutes.some((route) =>
+    request.nextUrl.pathname.startsWith(route)
+  );
+
+  // Only redirect if unauthenticated user attempts to access a protected route
+  if (!user && isProtectedRoute) {
     const url = request.nextUrl.clone();
     url.pathname = "/login";
     return NextResponse.redirect(url);
   }
 
-  // IMPORTANT: You *must* return the supabaseResponse object as it is.
-  // If you're creating a new response object with NextResponse.next() make sure to:
-  // 1. Pass the request in it, like so:
-  //    const myNewResponse = NextResponse.next({ request })
-  // 2. Copy over the cookies, like so:
-  //    myNewResponse.cookies.setAll(supabaseResponse.cookies.getAll())
-  // 3. Change the myNewResponse object to fit your needs, but avoid changing
-  //    the cookies!
-  // 4. Finally:
-  //    return myNewResponse
-  // If this is not done, you may be causing the browser and server to go out
-  // of sync and terminate the user's session prematurely!
-
+  // IMPORTANT: Return the supabaseResponse object as required by Supabase SSR
   return supabaseResponse;
 }
-
-//** asterisked comments are added by me(mondalsyamantak) 
-//** comments without asterisk are pregenerated
