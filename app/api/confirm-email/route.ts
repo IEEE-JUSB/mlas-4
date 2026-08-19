@@ -16,26 +16,18 @@ export async function GET(request: NextRequest) {
   const supabase = await createClient();
   let verifiedUser = null;
 
-  console.log("reached email confirmation point with ",searchParams);
-
   //pkce code verification
   if (code) {
     const { data, error } = await supabase.auth.exchangeCodeForSession(code);
-    console.log("1\n");
     
     if (!error && data.user) {
       verifiedUser = data.user;
-      console.log("user is: ", verifiedUser)
-    } else {
-      console.log("at line 31, error: ", error)
-      console.log("user at line 32: ", data.user)
-    }
+    } 
   }
 
 
   if (verifiedUser) {
     const adminSupabase = createAdminClient();
-    console.log("putting database with user:", verifiedUser)
     const { error: dbError } = await adminSupabase
       .from('users')
       .upsert({
@@ -46,9 +38,6 @@ export async function GET(request: NextRequest) {
 
     if (!dbError) {
       return NextResponse.redirect(`${origin}/complete-profile`);
-    }
-    else {
-      console.log("dbError: ",dbError)
     }
   }
 
