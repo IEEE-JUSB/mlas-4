@@ -20,31 +20,46 @@ export default function Footer() {
 
         {/* Quicklinks Column */}
         <div className="space-y-3">
-          <h4 className="text-zinc-900 dark:text-white font-semibold tracking-wider text-sm uppercase">Quicklinks</h4>
+          <h4 className="text-zinc-900 dark:text-white font-semibold tracking-wider text-sm uppercase">
+            Quicklinks
+          </h4>
           <ul className="grid grid-cols-2 xl:grid-cols-1 gap-2 text-sm">
             <li>
-              <Link href="/register" className="hover:text-purple-600 dark:hover:text-purple-400 transition-colors">
-                Register for MLAS 4.0
-              </Link>
-            </li>
-            <li>
-              <Link href="/login" className="hover:text-purple-600 dark:hover:text-purple-400 transition-colors">
-                Participant Portal
-              </Link>
-            </li>
-            <li>
-              <a href="https://www.ieee-jaduniv.in/" target='_blank' className="hover:text-purple-600 dark:hover:text-purple-400 transition-colors">
+              <a
+                href="https://www.ieee-jaduniv.in/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hover:text-purple-600 dark:hover:text-purple-400 transition-colors"
+              >
                 About IEEE JUSB
               </a>
             </li>
             <li>
-              <a href="/#about" className="hover:text-purple-600 dark:hover:text-purple-400 transition-colors">
+              <a
+                href="/#about"
+                className="hover:text-purple-600 dark:hover:text-purple-400 transition-colors"
+              >
                 About MLAS 4.0
               </a>
             </li>
+            <li>
+              <Link
+                href="/privacy"
+                className="hover:text-purple-600 dark:hover:text-purple-400 transition-colors"
+              >
+                Privacy Policy
+              </Link>
+            </li>
+            <li>
+              <Link
+                href="/terms"
+                className="hover:text-purple-600 dark:hover:text-purple-400 transition-colors"
+              >
+                Terms of Service
+              </Link>
+            </li>
           </ul>
         </div>
-
         {/* Contact Details Column */}
         <div className="space-y-3">
           <h4 className="text-zinc-900 dark:text-white font-semibold tracking-wider text-sm uppercase">Contact Us</h4>
