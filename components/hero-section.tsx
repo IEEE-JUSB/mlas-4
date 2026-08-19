@@ -146,12 +146,12 @@ export default function HeroSection() {
       </div>
 
       {/* Scroll cue */}
-      <div
+      {/* <div
         ref={scrollCueRef}
         className="absolute bottom-8 left-1/2 -translate-x-1/2 z-10 text-zinc-400 dark:text-slate-500"
       >
         <ChevronDown className="w-5 h-5" />
-      </div>
+      </div> */}
     </section>
   );
 }
