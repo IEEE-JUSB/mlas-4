@@ -136,12 +136,6 @@ export default function HeroSection() {
             Register Now
             <ArrowUpRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
           </Link>
-          <Link
-            href="#agenda"
-            className="inline-flex items-center gap-2 rounded-full bg-purple-50/40 dark:bg-purple-950/40 border border-purple-600 dark:border-purple-800/60 px-7 py-3 text-sm font-semibold text-zinc-700 dark:text-slate-300 hover:scale-105 transition-all duration-300"
-          >
-            View Agenda
-          </Link>
         </div>
       </div>
 
