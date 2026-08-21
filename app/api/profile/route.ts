@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { type NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
+import { getPricing, EARLY_BIRD_SEAT_LIMITS } from "@/lib/razorpay/config";
 
 const ProfileData = z.object({
   phone: z.string().regex(/^\d{10}$/, "Phone number should be 10 digits long"),
@@ -105,25 +106,28 @@ export async function GET(request: NextRequest) {
   let isEarlyBird = false;
   if (isRegistrationCompleted) {
     const isIeeeMember = Boolean(profileRow?.is_ieee_member);
-    const seatLimit = isIeeeMember ? 10 : 20; // IEEE: 10, Non-IEEE: 20
+    const membershipType = isIeeeMember ? 'ieee' : 'non_ieee';
+    const seatLimit = EARLY_BIRD_SEAT_LIMITS[membershipType];
 
-    // Count existing early bird payments
-    const { data: existingPayments, error: countError } = await supabase
-      .from("users")
-      .select("id")
-      .eq("is_ieee_member", isIeeeMember)
-      .eq("status", "payment completed")
-      .eq("pricing_tier", "early_bird");
+    // Use atomic seat counting function to prevent race conditions
+    const { data: seatData, error: seatError } = await supabase
+      .rpc('check_early_bird_availability', {
+        p_is_ieee_member: isIeeeMember,
+        p_seat_limit: seatLimit,
+      });
 
-    const usedSeats = existingPayments?.length || 0;
-    isEarlyBird = usedSeats < seatLimit;
-
-    // Apply pricing based on early bird availability
-    if (isEarlyBird) {
-      amount = isIeeeMember ? 499 : 599; // Early bird pricing
+    let usedSeats = 0;
+    if (!seatError && seatData && seatData.length > 0) {
+      usedSeats = seatData[0].used_seats;
+      isEarlyBird = seatData[0].is_available;
     } else {
-      amount = isIeeeMember ? 599 : 699; // Regular pricing
+      // Fallback to regular pricing if seat check fails
+      isEarlyBird = false;
     }
+
+    // Apply pricing based on early bird availability using getPricing function
+    const pricing = getPricing(membershipType, !isEarlyBird);
+    amount = pricing.amount / 100; // Convert from paise to rupees
   }
 
   const responseBody = {

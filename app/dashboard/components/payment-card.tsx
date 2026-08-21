@@ -31,6 +31,9 @@ export function PaymentCard({
       const profileData = await profileResponse.json();
       const isIeeeMember = profileData.profile?.ieeeStudentBranch && profileData.profile?.ieeeMembershipNumber;
       const membershipType = isIeeeMember ? "ieee" : "non_ieee";
+      const userName = profileData.profile?.username || "";
+      const userEmail = profileData.user?.email || "";
+      const userPhone = profileData.profile?.phone || "";
 
       // Create Razorpay order
       const response = await fetch("/api/razorpay-payment", {
@@ -76,9 +79,9 @@ export function PaymentCard({
             }
           },
           prefill: {
-            name: "",
-            email: "",
-            contact: "",
+            name: userName,
+            email: userEmail,
+            contact: userPhone,
           },
           theme: {
             color: "#2563eb",
