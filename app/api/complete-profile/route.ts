@@ -1,6 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
 import { type NextRequest, NextResponse } from "next/server";
-import { createAdminClient } from "@/lib/supabase/admin";
 import { z } from "zod";
 
 const CompleteProfileSchema = z.object({
@@ -55,7 +54,6 @@ export async function POST(request: NextRequest) {
     const validatedData = validationResult.data;
 
     const supabase = await createClient();
-    const supabaseAdmin = await createAdminClient();
 
     const {
       data: { user },
@@ -73,7 +71,7 @@ export async function POST(request: NextRequest) {
     const { phone, college, department, year, foodPreference, tShirtSize } = validatedData;
     const updatePayload = { phone: phone, college: college, department: department, year, food_preference: foodPreference, tshirt_size: tShirtSize };
 
-    const { error: dbError } = await supabaseAdmin
+    const { error: dbError } = await supabase
       .from("users")
       .update(updatePayload)
       .eq("id", user.id);
