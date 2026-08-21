@@ -62,12 +62,12 @@ export default function Footer() {
         </div>
         {/* Contact Details Column */}
         <div className="space-y-3">
-          <h4 className="text-zinc-900 dark:text-white font-semibold tracking-wider text-sm uppercase">Contact Us</h4>
+          <h4 className="text-zinc-900 dark:text-white font-semibold tracking-wider text-sm uppercase">Contact IEEE JUSB</h4>
           <ul className="space-y-2.5 text-sm">
             <li className="flex items-center gap-2.5">
               <Mail className="w-4 h-4 text-purple-600 dark:text-purple-400 shrink-0" />
-              <a href="mailto:pilaniwalakhushwant@gmail.com" className="hover:text-purple-600 dark:hover:text-purple-400 transition-colors truncate">
-                pilaniwalakhushwant@gmail.com
+              <a target= "_blank" href="mailto:jaduniv.ieee@gmail.com" className="hover:text-purple-600 dark:hover:text-purple-400 transition-colors truncate">
+                jaduniv.ieee@gmail.com
               </a>
             </li>
             <li className="flex items-center gap-2.5">

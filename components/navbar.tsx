@@ -11,7 +11,7 @@ import Image from 'next/image';
 const NAV_LINKS = [
   { label: "Home", href: "/#" },
   { label: "About", href: "/#about" },
-  { label: "Agenda", href: "/#agenda" },
+  { label: "Timeline", href: "/#timeline" },
   { label: "Contact", href: "/#contact" },
 ];
 

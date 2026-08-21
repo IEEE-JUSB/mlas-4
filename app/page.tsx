@@ -1,6 +1,7 @@
 import HeroSection from "@/components/hero-section";
-import AboutSection from "@/components/about-section";
-import AgendaSection from "@/components/agenda-section";
+import AboutSection from "@/components/front-page/about-section";
+import AgendaSection from "@/components/front-page/agenda-section";
+import ContactSection from "@/components/front-page/contact-us";
 
 export default function Home() {
   return (
@@ -8,6 +9,7 @@ export default function Home() {
       <HeroSection />
       <AboutSection />
       <AgendaSection />
+      <ContactSection />
     </main>
   );
 }
