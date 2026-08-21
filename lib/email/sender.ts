@@ -15,6 +15,18 @@ interface SendReceiptEmailParams {
   firmName?: string;
 }
 
+// Helper function to escape HTML special characters
+function escapeHtml(text: string): string {
+  const map: Record<string, string> = {
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#039;',
+  };
+  return text.replace(/[&<>"']/g, (char) => map[char]);
+}
+
 // Helper function to convert amount to words using number-to-words library
 function convertAmountToWords(amount: number): string {
   const rupees = Math.floor(amount);
@@ -67,6 +79,7 @@ export async function sendReceiptEmail({
   const amountInWords = convertAmountToWords(amountInRupees);
   const paymentAccount = `MLAS-4 Registration (${membershipLabel})`;
   const amountInRupeesFormatted = `₹${amountInRupees}`;
+  const escapedUserName = escapeHtml(userName);
 
   // Generate receipt image using canvas
   const receiptBuffer = await generateReceiptImage({
@@ -95,7 +108,7 @@ export async function sendReceiptEmail({
         <!-- Email Header -->
         <div style="text-align: center; margin-bottom: 30px;">
           <h2 style="margin: 0;">Payment Receipt - Workshop Registration</h2>
-          <p style="margin: 10px 0;">Dear ${userName},</p>
+          <p style="margin: 10px 0;">Dear ${escapedUserName},</p>
           <p style="margin: 0;">Thank you for your payment! Your registration has been successfully completed.</p>
         </div>
 

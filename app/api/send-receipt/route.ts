@@ -41,7 +41,8 @@ export async function POST(request: NextRequest) {
     }
 
     // Save payment to user record with idempotency check
-    const wasSaved = await savePaymentToUser(user.id, paymentId);
+    const pricingTier = payment.notes?.pricingTier === 'early_bird' ? 'early_bird' : 'regular';
+    const wasSaved = await savePaymentToUser(user.id, paymentId, pricingTier);
 
     // If payment was already saved, skip email sending (idempotency)
     if (!wasSaved) {

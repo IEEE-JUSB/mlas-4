@@ -29,6 +29,28 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Check if user already has a payment (prevent duplicate orders)
+    const { data: existingUser, error: existingUserError } = await supabase
+      .from('users')
+      .select('payment_id')
+      .eq('id', user.id)
+      .single();
+
+    if (existingUserError && existingUserError.code !== 'PGRST116') {
+      console.error('Failed to check existing payment:', existingUserError);
+      return NextResponse.json(
+        { error: 'Failed to check payment status' },
+        { status: 500 }
+      );
+    }
+
+    if (existingUser?.payment_id) {
+      return NextResponse.json(
+        { error: 'Payment already completed' },
+        { status: 400 }
+      );
+    }
+
     // If user selected IEEE membership, verify they have been verified by admin
     if (membershipType === 'ieee') {
       const { data: userData, error: userError } = await supabase
@@ -64,12 +86,14 @@ export async function POST(request: NextRequest) {
       const seatLimit = EARLY_BIRD_SEAT_LIMITS[membershipType];
 
       // Count existing early bird payments for this membership type
+      // Filter by pricing_tier = 'early_bird' to count only early bird seats
       // For IEEE, only count users who are verified IEEE members
       const { data: existingPayments, error: countError } = await supabase
         .from('users')
         .select('id')
         .eq('is_ieee_member', membershipType === 'ieee')
-        .eq('status', 'payment completed');
+        .eq('status', 'payment completed')
+        .eq('pricing_tier', 'early_bird');
 
       if (countError) {
         console.error('Failed to count existing payments:', countError);
@@ -106,6 +130,7 @@ export async function POST(request: NextRequest) {
       notes: {
         userId: user.id,
         membershipType,
+        pricingTier: pricing.isEarlyBird ? 'early_bird' : 'regular',
       },
     });
 

@@ -55,6 +55,7 @@ export interface RazorpayWebhookPayload {
         notes: {
           userId?: string;
           membershipType?: string;
+          pricingTier?: 'early_bird' | 'regular';
         };
       };
     };

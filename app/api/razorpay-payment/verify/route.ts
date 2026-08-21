@@ -65,9 +65,28 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(response);
     }
 
+    // Re-verify IEEE membership if order was for IEEE pricing
+    if (order.notes?.membershipType === 'ieee') {
+      const { data: userData, error: userError } = await supabase
+        .from('users')
+        .select('is_ieee_member')
+        .eq('id', user.id)
+        .single();
+
+      if (userError || !userData || !userData.is_ieee_member) {
+        console.error('[Verify] IEEE membership verification failed:', userError);
+        const response: VerifyPaymentResponse = {
+          confirmed: false,
+          redirect: '/checkout',
+        };
+        return NextResponse.json(response);
+      }
+    }
+
     // Save payment to user record
     try {
-      await savePaymentToUser(user.id, razorpay_payment_id);
+      const pricingTier = order.notes?.pricingTier === 'early_bird' ? 'early_bird' : 'regular';
+      await savePaymentToUser(user.id, razorpay_payment_id, pricingTier);
     } catch (dbError) {
       console.error('[Verify] Failed to save payment to database:', dbError);
       // Return 500 to indicate server error - payment was verified but DB save failed

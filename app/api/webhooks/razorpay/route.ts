@@ -53,7 +53,8 @@ export async function POST(request: NextRequest) {
       // Save payment to user record with idempotency check
       let wasSaved: boolean;
       try {
-        wasSaved = await savePaymentToUser(userId, paymentId);
+        const pricingTier = payment.notes?.pricingTier === 'early_bird' ? 'early_bird' : 'regular';
+        wasSaved = await savePaymentToUser(userId, paymentId, pricingTier);
       } catch (dbError) {
         console.error('[Webhook] Failed to save payment to database:', dbError);
         // Return 500 to trigger retry for DB failures

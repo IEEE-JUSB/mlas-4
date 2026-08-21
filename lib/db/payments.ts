@@ -4,7 +4,7 @@ import { createClient } from '@/lib/supabase/server';
  * Database function for saving payment records with idempotency.
  *
  * This function:
- * 1. Atomically updates payment_id and status if payment_id is null
+ * 1. Atomically updates payment_id, status, and pricing_tier if payment_id is null
  * 2. Returns false if payment was already recorded (no-op)
  * 3. Returns true if payment was successfully saved
  *
@@ -13,17 +13,28 @@ import { createClient } from '@/lib/supabase/server';
  *
  * Assumes SU1 (DB Table Setup) has been implemented with users table.
  */
-export async function savePaymentToUser(userId: string, paymentId: string): Promise<boolean> {
+export async function savePaymentToUser(
+  userId: string,
+  paymentId: string,
+  pricingTier?: 'early_bird' | 'regular'
+): Promise<boolean> {
   const supabase = await createClient();
 
   // Atomically update user with payment details using conditional update
   // Only update if payment_id is currently null (prevents race conditions)
+  const updateData: any = {
+    payment_id: paymentId,
+    status: 'payment completed',
+  };
+
+  // Only set pricing_tier if provided
+  if (pricingTier) {
+    updateData.pricing_tier = pricingTier;
+  }
+
   const { data: updatedUser, error: updateError } = await supabase
     .from('users')
-    .update({
-      payment_id: paymentId,
-      status: 'payment completed',
-    })
+    .update(updateData)
     .eq('id', userId)
     .is('payment_id', null) // Only update if payment_id is currently null
     .select('payment_id')
@@ -39,6 +50,6 @@ export async function savePaymentToUser(userId: string, paymentId: string): Prom
     throw new Error(`Failed to update user: ${updateError.message}`);
   }
 
-  console.log('[DB] Payment saved successfully:', { userId, paymentId });
+  console.log('[DB] Payment saved successfully:', { userId, paymentId, pricingTier });
   return true;
 }
