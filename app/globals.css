@@ -8,6 +8,8 @@
 
 @layer base {
   :root {
+    color-scheme: light;
+
     --background: 222 47% 11%;
     --foreground: 210 40% 98%;
 
@@ -43,9 +45,18 @@
     --chart-5: 340 75% 55%;
 
     --radius: 0.75rem;
+
+    /* Light Mode Scrollbar Colors */
+    --sb-track: #f1f5f9;
+    --sb-thumb: #a5a5a6;
+    --sb-thumb-hover: #94a3b8;
+    --sb-arrow-up: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="8" height="8" viewBox="0 0 24 24" fill="%2364748b"><path d="M12 8l-6 6h12z"/></svg>');
+    --sb-arrow-down: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="8" height="8" viewBox="0 0 24 24" fill="%2364748b"><path d="M12 16l6-6H6z"/></svg>');
   }
 
   .dark {
+    color-scheme: dark;
+
     --background: 222 47% 11%;
     --foreground: 210 40% 98%;
 
@@ -73,6 +84,13 @@
     --border: 217 33% 22%;
     --input: 217 33% 22%;
     --ring: 217 91% 60%;
+
+    /* Dark Mode Scrollbar Overrides */
+    --sb-track: #0a0a0a;
+    --sb-thumb: #585858;
+    --sb-thumb-hover: #444444;
+    --sb-arrow-up: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="8" height="8" viewBox="0 0 24 24" fill="%23666666"><path d="M12 8l-6 6h12z"/></svg>');
+    --sb-arrow-down: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="8" height="8" viewBox="0 0 24 24" fill="%23666666"><path d="M12 16l6-6H6z"/></svg>');
   }
 
   * {
@@ -107,5 +125,41 @@
     background: no-repeat url(https://s2.svgbox.net/pen-brushes.svg?ic=brush-5&color=7C3AED);
     margin: -2px -6px;
     padding: 2px 6px;
+  }
+}
+
+@layer utilities {
+  /* Firefox */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: var(--sb-thumb) var(--sb-track);
+  }
+
+  /* Chrome, Safari, Edge */
+  ::-webkit-scrollbar {
+    width: 10px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: var(--sb-track);
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: var(--sb-thumb);
+    border-radius: 4px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--sb-thumb-hover);
+  }
+
+  ::-webkit-scrollbar-button:single-button:vertical:decrement {
+    height: 12px;
+    background: var(--sb-track) var(--sb-arrow-up) no-repeat center;
+  }
+
+  ::-webkit-scrollbar-button:single-button:vertical:increment {
+    height: 12px;
+    background: var(--sb-track) var(--sb-arrow-down) no-repeat center;
   }
 }
