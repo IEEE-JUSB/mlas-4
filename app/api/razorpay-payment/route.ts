@@ -84,32 +84,31 @@ export async function POST(request: NextRequest) {
     // Check early bird seat limits if early bird pricing is active
     if (pricing.isEarlyBird) {
       const seatLimit = EARLY_BIRD_SEAT_LIMITS[membershipType];
+      const isIeeeMember = membershipType === 'ieee';
 
-      // Count existing early bird payments for this membership type
-      // Filter by pricing_tier = 'early_bird' to count only early bird seats
-      // For IEEE, only count users who are verified IEEE members
-      const { data: existingPayments, error: countError } = await supabase
-        .from('users')
-        .select('id')
-        .eq('is_ieee_member', membershipType === 'ieee')
-        .eq('status', 'payment completed')
-        .eq('pricing_tier', 'early_bird');
+      // Use atomic seat counting function to prevent race conditions
+      const { data: seatData, error: seatError } = await supabase
+        .rpc('check_early_bird_availability', {
+          p_is_ieee_member: isIeeeMember,
+          p_seat_limit: seatLimit,
+        });
 
-      if (countError) {
-        console.error('Failed to count existing payments:', countError);
-        // Continue with early bird pricing even if count fails
-      } else {
-        const usedSeats = existingPayments?.length || 0;
+      if (seatError) {
+        console.error('Failed to check seat availability:', seatError);
+        // Fallback to regular pricing if seat check fails
+        pricing = getPricing(membershipType, true);
+      } else if (seatData && seatData.length > 0) {
+        const { is_available, used_seats } = seatData[0];
 
-        if (usedSeats >= seatLimit) {
+        if (!is_available) {
           console.log(
-            `Early bird seats exhausted for ${membershipType}. Used: ${usedSeats}, Limit: ${seatLimit}. Switching to regular pricing.`
+            `Early bird seats exhausted for ${membershipType}. Used: ${used_seats}, Limit: ${seatLimit}. Switching to regular pricing.`
           );
           // Force regular pricing when seats are exhausted
           pricing = getPricing(membershipType, true);
         } else {
           console.log(
-            `Early bird pricing active for ${membershipType}. Used: ${usedSeats}, Limit: ${seatLimit}`
+            `Early bird pricing active for ${membershipType}. Used: ${used_seats}, Limit: ${seatLimit}`
           );
         }
       }

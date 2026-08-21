@@ -22,7 +22,11 @@ export async function savePaymentToUser(
 
   // Atomically update user with payment details using conditional update
   // Only update if payment_id is currently null (prevents race conditions)
-  const updateData: any = {
+  const updateData: {
+    payment_id: string;
+    status: string;
+    pricing_tier?: 'early_bird' | 'regular';
+  } = {
     payment_id: paymentId,
     status: 'payment completed',
   };

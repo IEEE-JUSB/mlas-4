@@ -51,6 +51,7 @@ async function DashboardContent() {
           status={payment.status}
           amount={payment.amount || 0}
           isRegistrationComplete={isRegistrationComplete}
+          isEarlyBird={payment.isEarlyBird}
         />
       </section>
       <ProfileSection email={user.email} profile={profile} />

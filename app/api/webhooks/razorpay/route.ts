@@ -38,6 +38,13 @@ export async function POST(request: NextRequest) {
     // Parse webhook payload
     const payload: RazorpayWebhookPayload = JSON.parse(rawBody);
 
+    // Validate event type - only process payment.captured and payment.authorized
+    const validEvents = ['payment.captured', 'payment.authorized'];
+    if (!validEvents.includes(payload.event)) {
+      console.error('[Webhook] Invalid event type:', payload.event);
+      return NextResponse.json({ error: 'Invalid event type' }, { status: 400 });
+    }
+
     // Handle payment.captured event
     if (payload.event === 'payment.captured') {
       const payment = payload.payload.payment.entity;

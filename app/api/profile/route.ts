@@ -100,6 +100,32 @@ export async function GET(request: NextRequest) {
   const isRegistrationCompleted = requiredFieldsComplete && ieeePairValid;
   const isProfileIncomplete = !isRegistrationCompleted;
 
+  // Calculate pricing based on IEEE membership and early bird availability
+  let amount = 0;
+  let isEarlyBird = false;
+  if (isRegistrationCompleted) {
+    const isIeeeMember = Boolean(profileRow?.is_ieee_member);
+    const seatLimit = isIeeeMember ? 10 : 20; // IEEE: 10, Non-IEEE: 20
+
+    // Count existing early bird payments
+    const { data: existingPayments, error: countError } = await supabase
+      .from("users")
+      .select("id")
+      .eq("is_ieee_member", isIeeeMember)
+      .eq("status", "payment completed")
+      .eq("pricing_tier", "early_bird");
+
+    const usedSeats = existingPayments?.length || 0;
+    isEarlyBird = usedSeats < seatLimit;
+
+    // Apply pricing based on early bird availability
+    if (isEarlyBird) {
+      amount = isIeeeMember ? 499 : 599; // Early bird pricing
+    } else {
+      amount = isIeeeMember ? 599 : 699; // Regular pricing
+    }
+  }
+
   const responseBody = {
     user,
     profile,
@@ -113,7 +139,8 @@ export async function GET(request: NextRequest) {
       : null,
     payment: {
       status: profileRow?.payment_id ? "completed" : "pending",
-      amount: 0,
+      amount,
+      isEarlyBird,
       paymentId: profileRow?.payment_id ?? null,
     },
     isProfileIncomplete,
