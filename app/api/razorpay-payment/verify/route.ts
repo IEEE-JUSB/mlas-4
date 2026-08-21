@@ -66,7 +66,17 @@ export async function POST(request: NextRequest) {
     }
 
     // Save payment to user record
-    await savePaymentToUser(user.id, razorpay_payment_id);
+    try {
+      await savePaymentToUser(user.id, razorpay_payment_id);
+    } catch (dbError) {
+      console.error('[Verify] Failed to save payment to database:', dbError);
+      // Return 500 to indicate server error - payment was verified but DB save failed
+      // Frontend should handle this appropriately (show error, don't redirect to checkout)
+      return NextResponse.json(
+        { error: 'Database error saving payment' },
+        { status: 500 }
+      );
+    }
 
     const response: VerifyPaymentResponse = {
       confirmed: true,
