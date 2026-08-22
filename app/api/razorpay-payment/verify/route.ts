@@ -66,6 +66,31 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(response);
     }
 
+    // Fetch payment details to verify status and amount
+    const payment = await razorpay.payments.fetch(razorpay_payment_id);
+
+    if (!payment || payment.status !== 'captured') {
+      console.error('[Verify] Payment not captured:', payment?.status);
+      const response: VerifyPaymentResponse = {
+        confirmed: false,
+        redirect: '/checkout',
+      };
+      return NextResponse.json(response);
+    }
+
+    // Verify payment amount matches order amount
+    const paymentAmount = typeof payment.amount === 'string' ? parseInt(payment.amount, 10) : payment.amount;
+    const orderAmount = typeof order.amount === 'string' ? parseInt(order.amount, 10) : order.amount;
+
+    if (paymentAmount !== orderAmount) {
+      console.error('[Verify] Payment amount mismatch:', { paymentAmount, orderAmount });
+      const response: VerifyPaymentResponse = {
+        confirmed: false,
+        redirect: '/checkout',
+      };
+      return NextResponse.json(response);
+    }
+
     // Re-verify IEEE membership if order was for IEEE pricing
     if (order.notes?.membershipType === 'ieee') {
       const { data: userData, error: userError } = await supabase

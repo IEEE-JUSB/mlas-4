@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
+import { createAdminClient } from '@/lib/supabase/admin';
 import { getRazorpayClient } from '@/lib/razorpay/client';
 import { getPricing, EARLY_BIRD_SEAT_LIMITS } from '@/lib/razorpay/config';
-import { CreateOrderRequest, CreateOrderResponse } from '@/types/payment';
+import { CreateOrderResponse, CreateOrderRequest } from '@/types/payment';
 
 export async function POST(request: NextRequest) {
   try {
@@ -19,7 +20,7 @@ export async function POST(request: NextRequest) {
 
     // Parse request body
     const body: CreateOrderRequest = await request.json();
-    const { membershipType } = body;
+    const membershipType: 'ieee' | 'non_ieee' = body.membershipType;
 
     // Validate membership type
     if (membershipType !== 'ieee' && membershipType !== 'non_ieee') {
@@ -99,7 +100,21 @@ export async function POST(request: NextRequest) {
           p_seat_limit: seatLimit,
         });
 
-      if (reservationError || !reservationData || reservationData.length === 0 || !reservationData[0].is_available) {
+      if (reservationError) {
+        console.error('Failed to create reservation:', reservationError);
+        // Transient error - don't silently charge full price
+        return NextResponse.json(
+          { error: 'Failed to create reservation. Please try again.' },
+          { status: 500 }
+        );
+      } else if (!reservationData || reservationData.length === 0) {
+        console.error('Invalid reservation response');
+        return NextResponse.json(
+          { error: 'Invalid reservation response. Please try again.' },
+          { status: 500 }
+        );
+      } else if (!reservationData[0].is_available) {
+        // Actual seat exhaustion - switch to regular pricing
         console.log('Early bird seats not available, switching to regular pricing');
         forceRegular = true;
       } else {
@@ -133,7 +148,8 @@ export async function POST(request: NextRequest) {
 
     // Update reservation with the Razorpay order ID
     if (reservationId && pricing.isEarlyBird) {
-      const { error: updateError } = await supabase
+      const adminSupabase = createAdminClient();
+      const { error: updateError } = await adminSupabase
         .from('reservations')
         .update({ razorpay_order_id: order.id })
         .eq('id', reservationId);

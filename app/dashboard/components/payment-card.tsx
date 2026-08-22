@@ -43,16 +43,13 @@ export function PaymentCard({
       });
 
       if (!response.ok) {
-        throw new Error("Failed to create payment order");
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || "Failed to create payment order");
       }
 
       const orderData = await response.json();
 
-      // Load Razorpay script
-      const script = document.createElement("script");
-      script.src = "https://checkout.razorpay.com/v1/checkout.js";
-      script.async = true;
-      script.onload = () => {
+      const loadRazorpayScript = (orderData: any) => {
         const options = {
           key: orderData.key,
           amount: orderData.amount,
@@ -76,6 +73,13 @@ export function PaymentCard({
               const verifyData = await verifyResponse.json();
 
               if (verifyData.confirmed) {
+                // Trigger receipt email (idempotent, safe to call even if webhook already sent)
+                await fetch("/api/send-receipt", {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({ paymentId: response.razorpay_payment_id }),
+                }).catch((err) => console.error("Failed to trigger receipt email:", err));
+
                 window.location.reload();
               } else {
                 alert("Payment verification failed");
@@ -111,6 +115,17 @@ export function PaymentCard({
         });
         rzp.open();
       };
+
+      // Check if Razorpay is already loaded to prevent duplicate script injection
+      if ((window as any).Razorpay) {
+        loadRazorpayScript(orderData);
+        return;
+      }
+
+      const script = document.createElement('script');
+      script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+      script.async = true;
+      script.onload = () => loadRazorpayScript(orderData);
       script.onerror = () => {
         console.error("Failed to load Razorpay script");
         alert("Failed to load payment gateway. Please try again.");
