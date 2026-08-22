@@ -52,6 +52,9 @@ async function DashboardContent() {
           status={payment.status}
           amount={payment.amount || 0}
           isRegistrationComplete={isRegistrationComplete}
+          isEarlyBird={payment.isEarlyBird}
+          requiresIeeeVerification={payment.requiresIeeeVerification}
+          isIeeeEarlyBirdWindowExpired={payment.isIeeeEarlyBirdWindowExpired}
         />
       </section>
 
