@@ -71,6 +71,12 @@ export async function sendReceiptEmail({
 }: SendReceiptEmailParams): Promise<void> {
   const resend = new Resend(process.env.RESEND_API_KEY);
 
+  // Fail fast if RESEND_FROM_EMAIL is not configured
+  const fromEmail = process.env.RESEND_FROM_EMAIL;
+  if (!fromEmail) {
+    throw new Error('RESEND_FROM_EMAIL environment variable is not configured');
+  }
+
   const amountInRupees = amount / 100; // Convert from paise to rupees
   const membershipLabel = membershipType === 'ieee' ? 'IEEE Member' : 'Non-IEEE Member';
   const currentDate =
@@ -99,7 +105,7 @@ export async function sendReceiptEmail({
   const receiptDataUrl = `data:image/png;base64,${receiptBase64}`;
 
   const mailOptions = {
-    from: process.env.RESEND_FROM_EMAIL || (process.env.RESEND_API_KEY ? 'onboarding@resend.dev' : 'noreply@example.com'),
+    from: fromEmail,
     to: email,
     subject: 'Payment Receipt - Workshop Registration',
     html: `

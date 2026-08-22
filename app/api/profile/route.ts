@@ -109,19 +109,22 @@ export async function GET(request: NextRequest) {
     const membershipType = isIeeeMember ? 'ieee' : 'non_ieee';
     const seatLimit = EARLY_BIRD_SEAT_LIMITS[membershipType];
 
-    // Use atomic seat counting function to prevent race conditions
+    // Use SECURITY DEFINER RPC for seat counting to bypass RLS restrictions
     const { data: seatData, error: seatError } = await supabase
-      .rpc('check_early_bird_availability', {
+      .rpc('get_seat_availability_display', {
         p_is_ieee_member: isIeeeMember,
         p_seat_limit: seatLimit,
       });
 
-    let usedSeats = 0;
-    if (!seatError && seatData && seatData.length > 0) {
-      usedSeats = seatData[0].used_seats;
-      isEarlyBird = seatData[0].is_available;
-    } else {
+    if (seatError) {
+      console.error('Failed to check seat availability:', seatError);
       // Fallback to regular pricing if seat check fails
+      isEarlyBird = false;
+    } else if (seatData && seatData.length > 0) {
+      const { is_available } = seatData[0];
+      isEarlyBird = is_available;
+    } else {
+      // Unexpected response, fallback to regular pricing
       isEarlyBird = false;
     }
 

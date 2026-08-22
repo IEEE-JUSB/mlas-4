@@ -1,9 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { after } from 'next/server';
 import { createHmac } from 'crypto';
 import { savePaymentToUser } from '@/lib/db/payments';
 import { sendReceiptEmail } from '@/lib/email/sender';
 import { retryWithBackoff } from '@/lib/utils/retry';
 import { createClient } from '@/lib/supabase/server';
+import { createAdminClient } from '@/lib/supabase/admin';
 import { RazorpayWebhookPayload } from '@/types/payment';
 import { constantTimeCompare } from '@/lib/utils/crypto';
 
@@ -38,8 +40,8 @@ export async function POST(request: NextRequest) {
     // Parse webhook payload
     const payload: RazorpayWebhookPayload = JSON.parse(rawBody);
 
-    // Validate event type - only process payment.captured and payment.authorized
-    const validEvents = ['payment.captured', 'payment.authorized'];
+    // Validate event type - only process payment.captured
+    const validEvents = ['payment.captured'];
     if (!validEvents.includes(payload.event)) {
       console.error('[Webhook] Invalid event type:', payload.event);
       return NextResponse.json({ error: 'Invalid event type' }, { status: 400 });
@@ -59,9 +61,35 @@ export async function POST(request: NextRequest) {
 
       // Save payment to user record with idempotency check
       let wasSaved: boolean;
+      const pricingTier = payment.notes?.pricingTier === 'early_bird' ? 'early_bird' : 'regular';
+
       try {
-        const pricingTier = payment.notes?.pricingTier === 'early_bird' ? 'early_bird' : 'regular';
-        wasSaved = await savePaymentToUser(userId, paymentId, pricingTier);
+        // Try to confirm reservation first if early bird pricing
+        if (pricingTier === 'early_bird') {
+          const adminSupabase = createAdminClient();
+          const { data: confirmData, error: confirmError } = await adminSupabase
+            .rpc('confirm_reservation', {
+              p_razorpay_order_id: payment.order_id,
+              p_payment_id: paymentId,
+            });
+
+          if (confirmError) {
+            console.error('[Webhook] Failed to confirm reservation:', confirmError);
+            console.warn('[Webhook] Early-bird payment saved without matching reservation - possible data drift');
+            // Fallback to direct payment save if reservation confirmation fails
+            wasSaved = await savePaymentToUser(userId, paymentId, pricingTier);
+          } else if (confirmData === true) {
+            console.log('[Webhook] Reservation confirmed successfully');
+            wasSaved = true;
+          } else {
+            console.warn('[Webhook] Early-bird payment saved without matching reservation - possible data drift');
+            // No reservation found, fallback to direct payment save
+            wasSaved = await savePaymentToUser(userId, paymentId, pricingTier);
+          }
+        } else {
+          // Regular pricing - direct payment save
+          wasSaved = await savePaymentToUser(userId, paymentId, pricingTier);
+        }
       } catch (dbError) {
         console.error('[Webhook] Failed to save payment to database:', dbError);
         // Return 500 to trigger retry for DB failures
@@ -89,12 +117,13 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({ status: 'ok' });
       }
 
-      // Get email from auth.users
-      const { data: authUser } = await supabase.auth.admin.getUserById(userId);
+      // Get email from auth.users using admin client
+      const adminSupabase = createAdminClient();
+      const { data: authUser, error: authError } = await adminSupabase.auth.admin.getUserById(userId);
       const userEmail = authUser.user?.email;
 
-      if (!userEmail) {
-        console.error('[Webhook] User email not found');
+      if (authError || !userEmail) {
+        console.error('[Webhook] Failed to fetch user email:', authError);
         // Still return 200 to avoid webhook retries
         return NextResponse.json({ status: 'ok' });
       }
@@ -107,31 +136,32 @@ export async function POST(request: NextRequest) {
       }
 
       // Send receipt email with retry logic (non-blocking)
-      // Don't await this to ensure quick webhook response
-      retryWithBackoff(
-        () =>
-          sendReceiptEmail({
-            email: userEmail,
-            userName: userData.name || 'User',
-            paymentId,
-            amount:
-              typeof payment.amount === 'string' ? parseInt(payment.amount, 10) : payment.amount,
-            membershipType,
-            whatsappGroupLink,
-            paymentDate: payment.created_at
-              ? new Date(payment.created_at * 1000).toLocaleDateString('en-IN', {
-                  day: '2-digit',
-                  month: '2-digit',
-                  year: 'numeric',
-                })
-              : undefined,
-            paymentMethod: payment.method || 'UPI',
-            bankName: payment.bank || payment.wallet || 'Razorpay',
-            firmName: 'IEEE Student Branch',
-          }),
-        { maxAttempts: 5 }
-      ).catch((error) => {
-        console.error('[Webhook] Failed to send receipt email:', error);
+      after(() => {
+        retryWithBackoff(
+          () =>
+            sendReceiptEmail({
+              email: userEmail,
+              userName: userData.name || 'User',
+              paymentId,
+              amount:
+                typeof payment.amount === 'string' ? parseInt(payment.amount, 10) : payment.amount,
+              membershipType,
+              whatsappGroupLink,
+              paymentDate: payment.created_at
+                ? new Date(payment.created_at * 1000).toLocaleDateString('en-IN', {
+                    day: '2-digit',
+                    month: '2-digit',
+                    year: 'numeric',
+                  })
+                : undefined,
+              paymentMethod: payment.method || 'UPI',
+              bankName: payment.bank || payment.wallet || 'Razorpay',
+              firmName: 'IEEE Student Branch',
+            }),
+          { maxAttempts: 5 }
+        ).catch((error) => {
+          console.error('[Webhook] Failed to send receipt email:', error);
+        });
       });
 
       console.log('[Webhook] Payment processed successfully:', { userId, paymentId });

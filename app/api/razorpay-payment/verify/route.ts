@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
+import { createAdminClient } from '@/lib/supabase/admin';
 import { savePaymentToUser } from '@/lib/db/payments';
 import { getRazorpayClient } from '@/lib/razorpay/client';
 import { VerifyPaymentRequest, VerifyPaymentResponse } from '@/types/payment';
@@ -83,10 +84,36 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // Save payment to user record
+    // Confirm reservation and save payment to user record
     try {
       const pricingTier = order.notes?.pricingTier === 'early_bird' ? 'early_bird' : 'regular';
-      await savePaymentToUser(user.id, razorpay_payment_id, pricingTier);
+
+      // Try to confirm reservation first (if early bird)
+      if (pricingTier === 'early_bird') {
+        const adminSupabase = createAdminClient();
+        const { data: confirmData, error: confirmError } = await adminSupabase
+          .rpc('confirm_reservation', {
+            p_razorpay_order_id: razorpay_order_id,
+            p_payment_id: razorpay_payment_id,
+          });
+
+        if (confirmError) {
+          console.error('[Verify] Failed to confirm reservation:', confirmError);
+          console.warn('[Verify] Early-bird payment saved without matching reservation - possible data drift');
+          // Fallback to direct payment save if reservation confirmation fails
+          await savePaymentToUser(user.id, razorpay_payment_id, pricingTier);
+        } else if (confirmData === true) {
+          console.log('Reservation confirmed successfully');
+          return NextResponse.json({ confirmed: true });
+        } else {
+          console.warn('[Verify] Early-bird payment saved without matching reservation - possible data drift');
+          // No reservation found, fallback to direct payment save
+          await savePaymentToUser(user.id, razorpay_payment_id, pricingTier);
+        }
+      } else {
+        // Regular pricing - direct payment save
+        await savePaymentToUser(user.id, razorpay_payment_id, pricingTier);
+      }
     } catch (dbError) {
       console.error('[Verify] Failed to save payment to database:', dbError);
       // Return 500 to indicate server error - payment was verified but DB save failed

@@ -17,9 +17,9 @@ const defaultUrl = process.env.VERCEL_URL
 
 export const metadata: Metadata = {
   metadataBase: new URL(defaultUrl),
-  title: "Machine Learning Accelerator Summit 4.0",
+  title: "MLAS 4.0 | IEEE JUSB",
   description:
-    "Sign in with Google to register for the workshop, access event passes, and manage your participant profile.",
+    "Machine Learning Accelerator Summit 4.0 (MLAS) is a 2 day workshop on Machine Learning and AI, and anything new. Register for fun learning, events, workshops and networking related to this exciting domain.",
 };
 
 const geistSans = Geist({

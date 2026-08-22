@@ -89,7 +89,13 @@ export default function HeroSection() {
           ref={titleRef}
           className="text-5xl sm:text-7xl lg:text-8xl font-bold tracking-tight text-zinc-900 dark:text-white leading-[1.05] text-pretty"
         >
-          Machine Learning Accelerator Summit 4.0
+          <span className="hero-word inline-block">Machine</span>{" "}
+          <span className="hero-word inline-block">Learning</span>{" "}
+          <span className="hero-word inline-block">Accelerator</span>{" "}
+          <span className="hero-word inline-block">Summit</span>{" "}
+          <span className="hero-word inline-block bg-gradient-to-r from-purple-500 to-cyan-500 dark:from-purple-400 dark:to-cyan-400 bg-clip-text text-transparent">
+            4.0
+          </span>
         </h1>
 
         <p

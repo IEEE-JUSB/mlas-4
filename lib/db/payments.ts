@@ -1,4 +1,4 @@
-import { createClient } from '@/lib/supabase/server';
+import { createAdminClient } from '@/lib/supabase/admin';
 
 /**
  * Database function for saving payment records with idempotency.
@@ -11,6 +11,8 @@ import { createClient } from '@/lib/supabase/server';
  * Uses conditional update to prevent race conditions - only updates if payment_id is currently null.
  * This ensures atomicity without requiring database transactions.
  *
+ * Uses admin client to bypass the protect_users_workflow_columns trigger which requires service_role.
+ *
  * Assumes SU1 (DB Table Setup) has been implemented with users table.
  */
 export async function savePaymentToUser(
@@ -18,7 +20,7 @@ export async function savePaymentToUser(
   paymentId: string,
   pricingTier?: 'early_bird' | 'regular'
 ): Promise<boolean> {
-  const supabase = await createClient();
+  const supabase = createAdminClient();
 
   // Atomically update user with payment details using conditional update
   // Only update if payment_id is currently null (prevents race conditions)

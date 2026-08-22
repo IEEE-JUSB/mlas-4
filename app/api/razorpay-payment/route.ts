@@ -78,41 +78,38 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // Get pricing (includes early-bird discount logic)
+    // Get pricing
     let pricing = getPricing(membershipType);
+    let forceRegular = false;
+    let reservationId: string | null = null;
 
-    // Check early bird seat limits if early bird pricing is active
+    // For early bird pricing, reserve seat BEFORE creating Razorpay order
     if (pricing.isEarlyBird) {
       const seatLimit = EARLY_BIRD_SEAT_LIMITS[membershipType];
-      const isIeeeMember = membershipType === 'ieee';
+      const expiresAt = new Date(Date.now() + 15 * 60 * 1000); // 15 minutes from now
 
-      // Use atomic seat counting function to prevent race conditions
-      const { data: seatData, error: seatError } = await supabase
-        .rpc('check_early_bird_availability', {
-          p_is_ieee_member: isIeeeMember,
+      // Create reservation first (without order ID) to atomically lock the seat
+      const { data: reservationData, error: reservationError } = await supabase
+        .rpc('create_reservation', {
+          p_user_id: user.id,
+          p_membership_type: membershipType,
+          p_pricing_tier: 'early_bird',
+          p_razorpay_order_id: null, // Will be set after order creation
+          p_expires_at: expiresAt.toISOString(),
           p_seat_limit: seatLimit,
         });
 
-      if (seatError) {
-        console.error('Failed to check seat availability:', seatError);
-        // Fallback to regular pricing if seat check fails
-        pricing = getPricing(membershipType, true);
-      } else if (seatData && seatData.length > 0) {
-        const { is_available, used_seats } = seatData[0];
-
-        if (!is_available) {
-          console.log(
-            `Early bird seats exhausted for ${membershipType}. Used: ${used_seats}, Limit: ${seatLimit}. Switching to regular pricing.`
-          );
-          // Force regular pricing when seats are exhausted
-          pricing = getPricing(membershipType, true);
-        } else {
-          console.log(
-            `Early bird pricing active for ${membershipType}. Used: ${used_seats}, Limit: ${seatLimit}`
-          );
-        }
+      if (reservationError || !reservationData || reservationData.length === 0 || !reservationData[0].is_available) {
+        console.log('Early bird seats not available, switching to regular pricing');
+        forceRegular = true;
+      } else {
+        reservationId = reservationData[0].reservation_id;
+        console.log(`Reservation created: ${reservationId}`);
       }
     }
+
+    // Determine final pricing
+    pricing = getPricing(membershipType, forceRegular);
 
     const razorpayKeyId = process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID;
     if (!razorpayKeyId) {
@@ -120,8 +117,9 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Payment gateway not configured' }, { status: 500 });
     }
 
-    // Create Razorpay order
     const razorpay = getRazorpayClient();
+
+    // Create Razorpay order with the final pricing
     const order = await razorpay.orders.create({
       amount: pricing.amount,
       currency: pricing.currency,
@@ -132,6 +130,22 @@ export async function POST(request: NextRequest) {
         pricingTier: pricing.isEarlyBird ? 'early_bird' : 'regular',
       },
     });
+
+    // Update reservation with the Razorpay order ID
+    if (reservationId && pricing.isEarlyBird) {
+      const { error: updateError } = await supabase
+        .from('reservations')
+        .update({ razorpay_order_id: order.id })
+        .eq('id', reservationId);
+
+      if (updateError) {
+        console.error('Failed to update reservation with order ID:', updateError);
+        // Continue anyway - the reservation exists and the order is created
+        // The webhook/verify will handle the mismatch
+      } else {
+        console.log(`Reservation ${reservationId} linked to order ${order.id}`);
+      }
+    }
 
     // Return order details to frontend
     const response: CreateOrderResponse = {

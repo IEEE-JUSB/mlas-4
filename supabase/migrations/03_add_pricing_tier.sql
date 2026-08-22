@@ -41,39 +41,4 @@ begin
 end;
 $trigger2$;
 
--- Function to check early bird seat availability atomically
--- Uses row-level locking to prevent race conditions
-create or replace function public.check_early_bird_availability(
-  p_is_ieee_member boolean,
-  p_seat_limit int
-)
-returns table (
-  is_available boolean,
-  used_seats int
-)
-language plpgsql
-security definer
-as $$
-declare
-  v_used_seats int;
-begin
-  -- Lock the users table rows for this membership type to prevent concurrent modifications
-  select count(*)
-  into v_used_seats
-  from public.users
-  where is_ieee_member = p_is_ieee_member
-    and status = 'payment completed'
-    and pricing_tier = 'early_bird'
-  for update of users;
-
-  -- Check if seats are available
-  return query select
-    (v_used_seats < p_seat_limit) as is_available,
-    v_used_seats as used_seats;
-end;
-$$;
-
--- Grant execute permission to authenticated users
-grant execute on function public.check_early_bird_availability(boolean, int) to authenticated;
-
 commit;

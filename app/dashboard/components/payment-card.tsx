@@ -61,21 +61,30 @@ export function PaymentCard({
           description: "Workshop Registration",
           order_id: orderData.order_id,
           handler: async function (response: any) {
-            // Verify payment
-            const verifyResponse = await fetch("/api/razorpay-payment/verify", {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({
-                razorpay_order_id: response.razorpay_order_id,
-                razorpay_payment_id: response.razorpay_payment_id,
-                razorpay_signature: response.razorpay_signature,
-              }),
-            });
+            try {
+              // Verify payment
+              const verifyResponse = await fetch("/api/razorpay-payment/verify", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                  razorpay_order_id: response.razorpay_order_id,
+                  razorpay_payment_id: response.razorpay_payment_id,
+                  razorpay_signature: response.razorpay_signature,
+                }),
+              });
 
-            if (verifyResponse.ok) {
-              window.location.reload();
-            } else {
-              alert("Payment verification failed");
+              const verifyData = await verifyResponse.json();
+
+              if (verifyData.confirmed) {
+                window.location.reload();
+              } else {
+                alert("Payment verification failed");
+                setIsLoading(false);
+              }
+            } catch (error) {
+              console.error("Payment verification error:", error);
+              alert("Payment verification failed. Please refresh the page.");
+              setIsLoading(false);
             }
           },
           prefill: {
@@ -86,16 +95,31 @@ export function PaymentCard({
           theme: {
             color: "#2563eb",
           },
+          modal: {
+            ondismiss: function() {
+              console.log("Payment modal dismissed");
+              setIsLoading(false);
+            },
+          },
         };
 
         const rzp = new (window as any).Razorpay(options);
+        rzp.on('payment.failed', function(response: any) {
+          console.error("Payment failed:", response);
+          alert("Payment failed. Please try again or use a different payment method.");
+          setIsLoading(false);
+        });
         rzp.open();
+      };
+      script.onerror = () => {
+        console.error("Failed to load Razorpay script");
+        alert("Failed to load payment gateway. Please try again.");
+        setIsLoading(false);
       };
       document.body.appendChild(script);
     } catch (error) {
       console.error("Payment error:", error);
       alert("Failed to initiate payment");
-    } finally {
       setIsLoading(false);
     }
   };
