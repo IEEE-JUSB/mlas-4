@@ -106,7 +106,7 @@ async function drawPanel(ctx: SKRSContext2D, ox: number, data: ReceiptData, logo
 
   // Receipt No. - BOLD
   ctx.font = font(14, true);
-  ctx.fillText('Receipt No. :', ox + 337, 124);
+  ctx.fillText('Receipt No. :', ox + 300, 124);
 
   // Dated - BOLD
   ctx.fillText('Dated:', ox + 340, 153);
@@ -238,7 +238,7 @@ async function drawPanel(ctx: SKRSContext2D, ox: number, data: ReceiptData, logo
 
   // Firm's Name value
   ctx.font = font(14, false);
-  ctx.fillText(data.firmName, ox + 155, 132);
+  ctx.fillText(data.firmName, ox + 162, 132);
 
   // Receipt No. value
   ctx.fillText(data.receiptNo, ox + 410, 124);
@@ -246,10 +246,10 @@ async function drawPanel(ctx: SKRSContext2D, ox: number, data: ReceiptData, logo
   // Date value
   ctx.fillText(data.date, ox + 385, 153);
 
-  // User name
-  ctx.fillText(data.userName, bx + 15, 193);
+  // User name occupies the dedicated line below the receipt heading.
+  ctx.fillText(data.userName, bx + 15, 218);
   const userNameWidth = ctx.measureText(data.userName).width;
-  line(ctx, bx + 15 + userNameWidth + 6, 199, bx + bw - 10, 199, 1.8);
+  line(ctx, bx + 15 + userNameWidth + 6, 224, bx + bw - 10, 224, 1.8);
 
   // Amount in words
   ctx.fillText(data.amountInWords, bx + 148, 243);
@@ -267,9 +267,9 @@ async function drawPanel(ctx: SKRSContext2D, ox: number, data: ReceiptData, logo
   line(ctx, bx + 353 + dateWidth + 6, 299, bx + bw - 10, 299, 1.8);
 
   // Bank name
-  ctx.fillText(data.bankName, bx + 73, 343);
+  ctx.fillText(data.bankName, bx + 80, 343);
   const bankNameWidth = ctx.measureText(data.bankName).width;
-  line(ctx, bx + 73 + bankNameWidth + 6, 349, bx + 316, 349, 1.8);
+  line(ctx, bx + 80 + bankNameWidth + 6, 349, bx + 316, 349, 1.8);
 
   // Payment account
   ctx.fillText(data.paymentAccount, bx + 143, 368);
@@ -316,7 +316,7 @@ export async function generateReceiptImage(data: ReceiptData): Promise<Buffer> {
   ctx.fillStyle = '#666666';
   ctx.font = font(12, false);
   ctx.textAlign = 'center';
-  ctx.fillText('(Duplicate)', PANEL_W + 1 + 283, 120);
+  ctx.fillText('(Duplicate)', PANEL_W + 1 + 283, 108);
   ctx.textAlign = 'left';
 
   return canvas.toBuffer('image/png');

@@ -97,18 +97,18 @@ begin
     return query select
       v_existing_reservation_id as reservation_id,
       true as is_available,
-      (select used_seats from public.seat_counters
-       where membership_type = p_membership_type
-         and pricing_tier = p_pricing_tier) as used_seats;
+      (select sc.used_seats from public.seat_counters sc
+       where sc.membership_type = p_membership_type
+         and sc.pricing_tier = p_pricing_tier) as used_seats;
     return;
   end if;
 
   -- Lock and read the counter row atomically
-  select used_seats
+  select sc.used_seats
   into v_used_seats
-  from public.seat_counters
-  where membership_type = p_membership_type
-    and pricing_tier = p_pricing_tier
+  from public.seat_counters sc
+  where sc.membership_type = p_membership_type
+    and sc.pricing_tier = p_pricing_tier
   for update;
 
   -- Check if seats are available
@@ -121,10 +121,10 @@ begin
   end if;
 
   -- Increment the counter
-  update public.seat_counters
-  set used_seats = used_seats + 1
-  where membership_type = p_membership_type
-    and pricing_tier = p_pricing_tier;
+  update public.seat_counters sc
+  set used_seats = sc.used_seats + 1
+  where sc.membership_type = p_membership_type
+    and sc.pricing_tier = p_pricing_tier;
 
   -- Create the reservation (payment link ID can be null initially)
   insert into public.reservations (
@@ -288,11 +288,11 @@ begin
   v_membership_type := case when p_is_ieee_member then 'ieee' else 'non_ieee' end;
 
   -- Read from counters table (non-locking for display)
-  select used_seats
+  select sc.used_seats
   into v_used_seats
-  from public.seat_counters
-  where membership_type = v_membership_type
-    and pricing_tier = 'early_bird';
+  from public.seat_counters sc
+  where sc.membership_type = v_membership_type
+    and sc.pricing_tier = 'early_bird';
 
   -- If counter doesn't exist, default to 0
   if v_used_seats is null then

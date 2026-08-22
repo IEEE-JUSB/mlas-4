@@ -1,13 +1,10 @@
 begin;
 
--- Create enum for pricing tier
 create type public.pricing_tier as enum ('early_bird', 'regular');
 
--- Add pricing_tier column to users table
 alter table public.users
   add column pricing_tier public.pricing_tier null;
 
--- Update the trigger to protect pricing_tier from client edits
 create or replace function public.protect_users_workflow_columns()
 returns trigger
 language plpgsql
