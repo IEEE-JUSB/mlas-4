@@ -130,7 +130,7 @@ export async function POST(request: NextRequest) {
       currency: pricing.currency,
       accept_partial: false,
       expire_by: Math.ceil(expiresAt.getTime() / 1000),
-      reference_id: reservationId ? `res_${reservationId}` : `u_${user.id}`,
+      reference_id: reservationId ? `res_${reservationId.slice(0, 20)}_${Date.now()}` : `u_${user.id.slice(0, 20)}_${Date.now()}`,
       description: 'MLAS 4.0 Workshop Registration',
       customer: {
         name: existingUser.name,
