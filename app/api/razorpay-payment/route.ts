@@ -97,7 +97,6 @@ export async function POST(request: NextRequest) {
           p_pricing_tier: 'early_bird',
           p_razorpay_order_id: null, // Will be set after order creation
           p_expires_at: expiresAt.toISOString(),
-          p_seat_limit: seatLimit,
         });
 
       if (reservationError) {

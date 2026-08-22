@@ -10,6 +10,5 @@ select cron.schedule(
   $$
 );
 
--- Grant usage on cron job to authenticated users (for manual triggering if needed)
-grant usage on schema cron to authenticated;
-grant execute on function cron.schedule to authenticated;
+-- Note: No grants to authenticated users - cron.schedule is a privileged function
+-- The job is scheduled at migration time, no runtime access needed

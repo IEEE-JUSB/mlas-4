@@ -44,7 +44,6 @@ create or replace function public.create_reservation(
   p_membership_type text,
   p_pricing_tier public.pricing_tier,
   p_expires_at timestamptz,
-  p_seat_limit int,
   p_razorpay_order_id text default null
 )
 returns table (
@@ -60,7 +59,24 @@ declare
   v_used_seats int;
   v_new_reservation_id uuid;
   v_existing_reservation_id uuid;
+  v_actual_seat_limit int;
 begin
+  -- Security check: ensure caller can only create reservations for themselves
+  if p_user_id is distinct from auth.uid() then
+    raise exception 'Cannot create reservation for another user';
+  end if;
+
+  -- Derive seat limit server-side based on membership type and pricing tier
+  -- IMPORTANT: These values are the source of truth for enforcement.
+  -- The app's EARLY_BIRD_IEEE_SEATS and EARLY_BIRD_NON_IEEE_SEATS env vars
+  -- only affect display in the dashboard, not actual seat limits.
+  -- To change seat limits, update the values here AND the env vars together.
+  v_actual_seat_limit := case
+    when p_membership_type = 'ieee' and p_pricing_tier = 'early_bird' then 10
+    when p_membership_type = 'non_ieee' and p_pricing_tier = 'early_bird' then 20
+    else 999999  -- No limit for regular pricing
+  end;
+
   -- Check if user already has a pending reservation for this pricing tier
   select id
   into v_existing_reservation_id
@@ -102,7 +118,7 @@ begin
   for update;
 
   -- Check if seats are available
-  if v_used_seats >= p_seat_limit then
+  if v_used_seats >= v_actual_seat_limit then
     return query select
       null::uuid as reservation_id,
       false as is_available,
@@ -144,7 +160,9 @@ $$;
 -- Function to confirm a reservation (convert to actual payment)
 create or replace function public.confirm_reservation(
   p_razorpay_order_id text,
-  p_payment_id text
+  p_payment_id text,
+  p_user_id uuid default null,
+  p_pricing_tier public.pricing_tier default null
 )
 returns boolean
 language plpgsql
@@ -157,7 +175,7 @@ declare
   v_pricing_tier public.pricing_tier;
   v_membership_type text;
 begin
-  -- Find the pending reservation
+  -- Find the pending reservation by razorpay_order_id first
   select id, user_id, pricing_tier, membership_type
   into v_reservation_id, v_user_id, v_pricing_tier, v_membership_type
   from public.reservations
@@ -167,7 +185,27 @@ begin
   for update of reservations
   limit 1;
 
-  if not found then
+  -- Fallback: if not found by order_id and user_id/pricing_tier provided, try to find by user
+  if v_reservation_id is null and p_user_id is not null and p_pricing_tier is not null then
+    select id, user_id, pricing_tier, membership_type
+    into v_reservation_id, v_user_id, v_pricing_tier, v_membership_type
+    from public.reservations
+    where user_id = p_user_id
+      and pricing_tier = p_pricing_tier
+      and status = 'pending'
+      and expires_at > now()
+    for update of reservations
+    limit 1;
+
+    -- If found via fallback, update the razorpay_order_id
+    if v_reservation_id is not null then
+      update public.reservations
+      set razorpay_order_id = p_razorpay_order_id
+      where id = v_reservation_id;
+    end if;
+  end if;
+
+  if v_reservation_id is null then
     -- No pending reservation found
     return false;
   end if;
@@ -275,7 +313,7 @@ $$;
 
 -- Grant execute permissions
 grant execute on function public.create_reservation to authenticated;
-grant execute on function public.confirm_reservation to authenticated;
+-- confirm_reservation is service-role only (no authenticated grant) to prevent payment bypass
 grant execute on function public.expire_old_reservations to authenticated;
 grant execute on function public.get_seat_availability_display to authenticated;
 

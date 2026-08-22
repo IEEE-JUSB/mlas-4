@@ -71,6 +71,8 @@ export async function POST(request: NextRequest) {
             .rpc('confirm_reservation', {
               p_razorpay_order_id: payment.order_id,
               p_payment_id: paymentId,
+              p_user_id: userId,
+              p_pricing_tier: pricingTier,
             });
 
           if (confirmError) {
