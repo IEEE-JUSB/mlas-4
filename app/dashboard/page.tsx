@@ -6,6 +6,7 @@ import { DashboardHeader } from "./components/dashboard-header";
 import { PaymentCard } from "./components/payment-card";
 import { ProfileSection } from "./components/profile-section";
 import { RegistrationCard } from "./components/registration-card";
+import { PerksCard } from "./components/perks-card";
 import {
   type DashboardData,
   getDashboardData,
@@ -53,6 +54,9 @@ async function DashboardContent() {
           isRegistrationComplete={isRegistrationComplete}
         />
       </section>
+
+      <PerksCard tshirtImageSrc="/tshirt.png" />
+
       <ProfileSection email={user.email} profile={profile} />
     </>
   );
