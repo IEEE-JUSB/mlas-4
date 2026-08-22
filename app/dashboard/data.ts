@@ -33,6 +33,7 @@ export const dashboardResponseSchema = z.object({
       status: z.enum(["completed", "pending"]),
       amount: z.number().optional(),
       isEarlyBird: z.boolean().optional(),
+      requiresIeeeVerification: z.boolean().optional(),
       paymentId: z.string().nullable().optional(),
     })
     .optional(),

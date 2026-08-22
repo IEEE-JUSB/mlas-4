@@ -38,7 +38,7 @@ export async function savePaymentToUser(
     updateData.pricing_tier = pricingTier;
   }
 
-  const { data: updatedUser, error: updateError } = await supabase
+  const { error: updateError } = await supabase
     .from('users')
     .update(updateData)
     .eq('id', userId)
@@ -58,4 +58,33 @@ export async function savePaymentToUser(
 
   console.log('[DB] Payment saved successfully:', { userId, paymentId, pricingTier });
   return true;
+}
+
+export async function claimReceiptEmail(userId: string): Promise<boolean> {
+  const supabase = createAdminClient();
+  const { data, error } = await supabase
+    .from('users')
+    .update({ confirm_email_sent_at: new Date().toISOString() })
+    .eq('id', userId)
+    .is('confirm_email_sent_at', null)
+    .select('id')
+    .maybeSingle();
+
+  if (error) {
+    throw new Error(`Failed to claim receipt email: ${error.message}`);
+  }
+
+  return Boolean(data);
+}
+
+export async function releaseReceiptEmailClaim(userId: string): Promise<void> {
+  const supabase = createAdminClient();
+  const { error } = await supabase
+    .from('users')
+    .update({ confirm_email_sent_at: null })
+    .eq('id', userId);
+
+  if (error) {
+    throw new Error(`Failed to release receipt email claim: ${error.message}`);
+  }
 }

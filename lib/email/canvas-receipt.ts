@@ -1,4 +1,4 @@
-import { createCanvas, loadImage } from '@napi-rs/canvas';
+import { createCanvas, loadImage, type SKRSContext2D } from '@napi-rs/canvas';
 import { join } from 'path';
 
 // ============================================================
@@ -21,7 +21,7 @@ function font(size: number, bold = false) {
 }
 
 function line(
-  ctx: any,
+  ctx: SKRSContext2D,
   x1: number,
   y1: number,
   x2: number,
@@ -41,7 +41,7 @@ function line(
 // DRAW LOGO
 // ============================================================
 
-async function drawLogo(ctx: any, x: number, y: number, logoPath: string) {
+async function drawLogo(ctx: SKRSContext2D, x: number, y: number, logoPath: string) {
   const logo = await loadImage(logoPath);
 
   /*
@@ -69,7 +69,7 @@ interface ReceiptData {
   amountInRupees: string;
 }
 
-async function drawPanel(ctx: any, ox: number, data: ReceiptData, logoPath: string) {
+async function drawPanel(ctx: SKRSContext2D, ox: number, data: ReceiptData, logoPath: string) {
   // Everything in the receipt is pure black.
   ctx.fillStyle = BLACK;
   ctx.strokeStyle = BLACK;

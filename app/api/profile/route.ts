@@ -85,6 +85,8 @@ export async function GET(request: NextRequest) {
   const hasIeeeBranch = hasText(profileRow?.ieee_student_branch);
   const hasIeeeMembershipNo = hasText(profileRow?.ieee_membership_no);
   const ieeePairValid = hasIeeeBranch === hasIeeeMembershipNo;
+  const isIeeeApplicant = hasIeeeBranch && hasIeeeMembershipNo;
+  const requiresIeeeVerification = isIeeeApplicant && !profileRow?.is_ieee_member;
 
   const requiredFieldsComplete =
     Boolean(profileRow) &&
@@ -104,7 +106,7 @@ export async function GET(request: NextRequest) {
   // Calculate pricing based on IEEE membership and early bird availability
   let amount = 0;
   let isEarlyBird = false;
-  if (isRegistrationCompleted) {
+  if (isRegistrationCompleted && !requiresIeeeVerification) {
     const isIeeeMember = Boolean(profileRow?.is_ieee_member);
     const membershipType = isIeeeMember ? 'ieee' : 'non_ieee';
     const seatLimit = EARLY_BIRD_SEAT_LIMITS[membershipType];
@@ -148,6 +150,7 @@ export async function GET(request: NextRequest) {
       status: profileRow?.payment_id ? "completed" : "pending",
       amount,
       isEarlyBird,
+      requiresIeeeVerification,
       paymentId: profileRow?.payment_id ?? null,
     },
     isProfileIncomplete,

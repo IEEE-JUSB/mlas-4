@@ -23,7 +23,7 @@ create table public.reservations (
   user_id uuid not null references public.users(id) on delete cascade,
   membership_type text not null check (membership_type in ('ieee', 'non_ieee')),
   pricing_tier public.pricing_tier not null default 'early_bird',
-  razorpay_order_id text unique,
+  razorpay_payment_link_id text unique,
   status text not null default 'pending' check (status in ('pending', 'confirmed', 'expired', 'cancelled')),
   expires_at timestamptz not null,
   created_at timestamptz default now(),
@@ -38,13 +38,13 @@ create index idx_reservations_membership_type on public.reservations(membership_
 
 -- Function to create a reservation atomically
 -- Returns the reservation if successful, null if no seats available
--- razorpay_order_id can be null initially and set later
+-- razorpay_payment_link_id can be null initially and set later
 create or replace function public.create_reservation(
   p_user_id uuid,
   p_membership_type text,
   p_pricing_tier public.pricing_tier,
   p_expires_at timestamptz,
-  p_razorpay_order_id text default null
+  p_razorpay_payment_link_id text default null
 )
 returns table (
   reservation_id uuid,
@@ -88,15 +88,9 @@ begin
   limit 1;
 
   if v_existing_reservation_id is not null then
-    -- User already has a pending reservation, update it with new order details
-    -- Note: This handles single-user retry scenarios. Multi-tab concurrent checkout
-    -- (two tabs creating orders simultaneously) is a known edge case where the
-    -- reservation's razorpay_order_id may be overwritten by the second tab's order,
-    -- causing payment via the first tab's order to fall through to the fallback path.
-    -- This is accepted as a narrow edge case not worth handling explicitly.
+    -- User already has a pending reservation, so retain its existing payment link.
     update public.reservations
-    set razorpay_order_id = p_razorpay_order_id,
-        expires_at = p_expires_at,
+    set expires_at = p_expires_at,
         updated_at = now()
     where id = v_existing_reservation_id;
 
@@ -132,19 +126,19 @@ begin
   where membership_type = p_membership_type
     and pricing_tier = p_pricing_tier;
 
-  -- Create the reservation (razorpay_order_id can be null initially)
+  -- Create the reservation (payment link ID can be null initially)
   insert into public.reservations (
     user_id,
     membership_type,
     pricing_tier,
-    razorpay_order_id,
+    razorpay_payment_link_id,
     status,
     expires_at
   ) values (
     p_user_id,
     p_membership_type,
     p_pricing_tier,
-    p_razorpay_order_id,
+    p_razorpay_payment_link_id,
     'pending',
     p_expires_at
   ) returning id into v_new_reservation_id;
@@ -159,7 +153,7 @@ $$;
 
 -- Function to confirm a reservation (convert to actual payment)
 create or replace function public.confirm_reservation(
-  p_razorpay_order_id text,
+  p_razorpay_payment_link_id text,
   p_payment_id text,
   p_user_id uuid default null,
   p_pricing_tier public.pricing_tier default null
@@ -175,11 +169,11 @@ declare
   v_pricing_tier public.pricing_tier;
   v_membership_type text;
 begin
-  -- Find the pending reservation by razorpay_order_id first
+  -- Find the pending reservation by Payment Link ID first.
   select id, user_id, pricing_tier, membership_type
   into v_reservation_id, v_user_id, v_pricing_tier, v_membership_type
   from public.reservations
-  where razorpay_order_id = p_razorpay_order_id
+  where razorpay_payment_link_id = p_razorpay_payment_link_id
     and status = 'pending'
     and expires_at > now()
   for update of reservations
@@ -197,10 +191,10 @@ begin
     for update of reservations
     limit 1;
 
-    -- If found via fallback, update the razorpay_order_id
+    -- If found via fallback, link it to the captured Payment Link.
     if v_reservation_id is not null then
       update public.reservations
-      set razorpay_order_id = p_razorpay_order_id
+      set razorpay_payment_link_id = p_razorpay_payment_link_id
       where id = v_reservation_id;
     end if;
   end if;

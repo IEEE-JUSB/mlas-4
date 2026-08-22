@@ -1,10 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { after } from 'next/server';
 import { createHmac } from 'crypto';
-import { savePaymentToUser } from '@/lib/db/payments';
+import {
+  claimReceiptEmail,
+  releaseReceiptEmailClaim,
+  savePaymentToUser,
+} from '@/lib/db/payments';
 import { sendReceiptEmail } from '@/lib/email/sender';
 import { retryWithBackoff } from '@/lib/utils/retry';
-import { createClient } from '@/lib/supabase/server';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { RazorpayWebhookPayload } from '@/types/payment';
 import { constantTimeCompare } from '@/lib/utils/crypto';
@@ -40,19 +43,17 @@ export async function POST(request: NextRequest) {
     // Parse webhook payload
     const payload: RazorpayWebhookPayload = JSON.parse(rawBody);
 
-    // Validate event type - only process payment.captured
-    const validEvents = ['payment.captured'];
-    if (!validEvents.includes(payload.event)) {
+    if (payload.event !== 'payment_link.paid') {
       console.error('[Webhook] Invalid event type:', payload.event);
       return NextResponse.json({ error: 'Invalid event type' }, { status: 400 });
     }
 
-    // Handle payment.captured event
-    if (payload.event === 'payment.captured') {
+    if (payload.event === 'payment_link.paid') {
       const payment = payload.payload.payment.entity;
-      const userId = payment.notes?.userId;
+      const paymentLink = payload.payload.payment_link.entity;
+      const userId = paymentLink.notes?.userId;
       const paymentId = payment.id;
-      const membershipType = payment.notes?.membershipType || 'non_ieee';
+      const membershipType = paymentLink.notes?.membershipType || 'non_ieee';
 
       if (!userId) {
         console.error('Missing userId in payment notes');
@@ -61,7 +62,7 @@ export async function POST(request: NextRequest) {
 
       // Save payment to user record with idempotency check
       let wasSaved: boolean;
-      const pricingTier = payment.notes?.pricingTier === 'early_bird' ? 'early_bird' : 'regular';
+      const pricingTier = paymentLink.notes?.pricingTier === 'early_bird' ? 'early_bird' : 'regular';
 
       try {
         // Try to confirm reservation first if early bird pricing
@@ -69,7 +70,7 @@ export async function POST(request: NextRequest) {
           const adminSupabase = createAdminClient();
           const { data: confirmData, error: confirmError } = await adminSupabase
             .rpc('confirm_reservation', {
-              p_razorpay_order_id: payment.order_id,
+              p_razorpay_payment_link_id: paymentLink.id,
               p_payment_id: paymentId,
               p_user_id: userId,
               p_pricing_tier: pricingTier,
@@ -98,16 +99,11 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({ error: 'Database error saving payment' }, { status: 500 });
       }
 
-      // If payment was already saved, skip email sending (idempotency)
-      if (!wasSaved) {
-        console.log('[Webhook] Payment already processed:', { userId, paymentId });
-        return NextResponse.json({ status: 'ok' });
-      }
+      console.log('[Webhook] Payment persistence result:', { userId, paymentId, wasSaved });
 
-      // Get user details for email
-      // Email is in auth.users, name is in public.users
-      const supabase = await createClient();
-      const { data: userData, error: userError } = await supabase
+      // Webhooks do not have a user session, so use the service-role client for both lookups.
+      const adminSupabase = createAdminClient();
+      const { data: userData, error: userError } = await adminSupabase
         .from('users')
         .select('name')
         .eq('id', userId)
@@ -120,7 +116,6 @@ export async function POST(request: NextRequest) {
       }
 
       // Get email from auth.users using admin client
-      const adminSupabase = createAdminClient();
       const { data: authUser, error: authError } = await adminSupabase.auth.admin.getUserById(userId);
       const userEmail = authUser.user?.email;
 
@@ -137,7 +132,13 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({ status: 'ok' });
       }
 
-      // Send receipt email with retry logic (non-blocking)
+      // This independent marker keeps receipt delivery idempotent even when client-side
+      // verification recorded the payment before Razorpay delivers the webhook.
+      const shouldSendReceipt = await claimReceiptEmail(userId);
+      if (!shouldSendReceipt) {
+        return NextResponse.json({ status: 'ok' });
+      }
+
       after(() => {
         retryWithBackoff(
           () =>
@@ -163,6 +164,9 @@ export async function POST(request: NextRequest) {
           { maxAttempts: 5 }
         ).catch((error) => {
           console.error('[Webhook] Failed to send receipt email:', error);
+          releaseReceiptEmailClaim(userId).catch((releaseError) => {
+            console.error('[Webhook] Failed to release receipt email claim:', releaseError);
+          });
         });
       });
 

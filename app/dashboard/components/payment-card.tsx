@@ -3,6 +3,7 @@
 import { ArrowUpRight, CreditCard } from "lucide-react";
 import { useState } from "react";
 
+import type { CreatePaymentLinkResponse } from "@/types/payment";
 import { StatusBadge } from "./status-badge";
 
 type PaymentCardProps = {
@@ -10,6 +11,7 @@ type PaymentCardProps = {
   amount: number;
   isRegistrationComplete: boolean;
   isEarlyBird?: boolean;
+  requiresIeeeVerification?: boolean;
 };
 
 export function PaymentCard({
@@ -17,121 +19,27 @@ export function PaymentCard({
   amount,
   isRegistrationComplete,
   isEarlyBird,
+  requiresIeeeVerification,
 }: PaymentCardProps) {
   const isPaid = status === "completed" && isRegistrationComplete;
   const [isLoading, setIsLoading] = useState(false);
 
   const handlePayment = async () => {
-    if (!isRegistrationComplete || isLoading) return;
+    if (!isRegistrationComplete || requiresIeeeVerification || isLoading) return;
 
     setIsLoading(true);
     try {
-      // Get user profile to determine membership type
-      const profileResponse = await fetch("/api/profile");
-      const profileData = await profileResponse.json();
-      const isIeeeMember = profileData.profile?.ieeeStudentBranch && profileData.profile?.ieeeMembershipNumber;
-      const membershipType = isIeeeMember ? "ieee" : "non_ieee";
-      const userName = profileData.profile?.username || "";
-      const userEmail = profileData.user?.email || "";
-      const userPhone = profileData.profile?.phone || "";
-
-      // Create Razorpay order
       const response = await fetch("/api/razorpay-payment", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ membershipType }),
       });
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.error || "Failed to create payment order");
+        throw new Error(errorData.error || "Failed to create payment link");
       }
 
-      const orderData = await response.json();
-
-      const loadRazorpayScript = (orderData: any) => {
-        const options = {
-          key: orderData.key,
-          amount: orderData.amount,
-          currency: orderData.currency,
-          name: "MLAS 4.0",
-          description: "Workshop Registration",
-          order_id: orderData.order_id,
-          handler: async function (response: any) {
-            try {
-              // Verify payment
-              const verifyResponse = await fetch("/api/razorpay-payment/verify", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                  razorpay_order_id: response.razorpay_order_id,
-                  razorpay_payment_id: response.razorpay_payment_id,
-                  razorpay_signature: response.razorpay_signature,
-                }),
-              });
-
-              const verifyData = await verifyResponse.json();
-
-              if (verifyData.confirmed) {
-                // Trigger receipt email (idempotent, safe to call even if webhook already sent)
-                await fetch("/api/send-receipt", {
-                  method: "POST",
-                  headers: { "Content-Type": "application/json" },
-                  body: JSON.stringify({ paymentId: response.razorpay_payment_id }),
-                }).catch((err) => console.error("Failed to trigger receipt email:", err));
-
-                window.location.reload();
-              } else {
-                alert("Payment verification failed");
-                setIsLoading(false);
-              }
-            } catch (error) {
-              console.error("Payment verification error:", error);
-              alert("Payment verification failed. Please refresh the page.");
-              setIsLoading(false);
-            }
-          },
-          prefill: {
-            name: userName,
-            email: userEmail,
-            contact: userPhone,
-          },
-          theme: {
-            color: "#2563eb",
-          },
-          modal: {
-            ondismiss: function() {
-              console.log("Payment modal dismissed");
-              setIsLoading(false);
-            },
-          },
-        };
-
-        const rzp = new (window as any).Razorpay(options);
-        rzp.on('payment.failed', function(response: any) {
-          console.error("Payment failed:", response);
-          alert("Payment failed. Please try again or use a different payment method.");
-          setIsLoading(false);
-        });
-        rzp.open();
-      };
-
-      // Check if Razorpay is already loaded to prevent duplicate script injection
-      if ((window as any).Razorpay) {
-        loadRazorpayScript(orderData);
-        return;
-      }
-
-      const script = document.createElement('script');
-      script.src = 'https://checkout.razorpay.com/v1/checkout.js';
-      script.async = true;
-      script.onload = () => loadRazorpayScript(orderData);
-      script.onerror = () => {
-        console.error("Failed to load Razorpay script");
-        alert("Failed to load payment gateway. Please try again.");
-        setIsLoading(false);
-      };
-      document.body.appendChild(script);
+      const paymentLink: CreatePaymentLinkResponse = await response.json();
+      window.location.assign(paymentLink.paymentLinkUrl);
     } catch (error) {
       console.error("Payment error:", error);
       alert("Failed to initiate payment");
@@ -157,31 +65,49 @@ export function PaymentCard({
           </StatusBadge>
         </div>
         <div className="mt-6 flex items-center justify-between gap-4">
-          <div>
+          <div className="max-w-sm">
             <p className="text-[10px] uppercase tracking-[0.16em] text-zinc-500 dark:text-zinc-400">
-              Registration fee
+              {isRegistrationComplete && !requiresIeeeVerification ? "Registration fee" : "Payment status"}
             </p>
-            <p className="mt-1 text-2xl font-semibold text-zinc-900 dark:text-zinc-100">
-              ₹{amount || "0"}
-              {isEarlyBird && !isPaid && (
+            {!isRegistrationComplete ? (
+              <p className="mt-1 text-sm font-medium text-zinc-700 dark:text-zinc-300">
+                Complete your profile to view payment options.
+              </p>
+            ) : requiresIeeeVerification ? (
+              <p className="mt-1 text-sm font-medium text-amber-700 dark:text-amber-300">
+                Your IEEE membership is awaiting admin verification. Payment will unlock after approval.
+              </p>
+            ) : (
+              <p className="mt-1 text-2xl font-semibold text-zinc-900 dark:text-zinc-100">
+                ₹{amount}
+                {isEarlyBird && !isPaid && (
                 <span className="ml-2 text-xs font-normal text-green-600 dark:text-green-400">
                   (Early bird offer applied)
                 </span>
-              )}
-            </p>
+                )}
+              </p>
+            )}
           </div>
           <button
-            disabled={!isRegistrationComplete || isLoading || isPaid}
+            disabled={!isRegistrationComplete || requiresIeeeVerification || isLoading || isPaid}
             onClick={handlePayment}
             className={`group/button flex items-center gap-2 rounded-md px-4 py-2.5 text-xs font-semibold text-white shadow-lg transition-all ${
-              isRegistrationComplete && !isPaid
+              isRegistrationComplete && !requiresIeeeVerification && !isPaid
                 ? "bg-blue-600 shadow-blue-500/20 hover:bg-blue-700 hover:shadow-blue-500/30"
                 : "cursor-not-allowed bg-zinc-400/80 shadow-none"
             }`}
           >
             <CreditCard className="h-3.5 w-3.5" />
-            {isLoading ? "Processing..." : isPaid ? "Paid" : "Book Your Seat"}
-            {isRegistrationComplete && !isPaid && !isLoading && (
+            {isLoading
+              ? "Processing..."
+              : isPaid
+                ? "Paid"
+                : requiresIeeeVerification
+                  ? "Awaiting IEEE Approval"
+                  : isRegistrationComplete
+                    ? "Book Your Seat"
+                    : "Complete Profile First"}
+            {isRegistrationComplete && !requiresIeeeVerification && !isPaid && !isLoading && (
               <ArrowUpRight className="h-3.5 w-3.5 transition-transform group-hover/button:-translate-y-0.5 group-hover/button:translate-x-0.5" />
             )}
           </button>
