@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { getRazorpayClient } from '@/lib/razorpay/client';
-import { getPricing } from '@/lib/razorpay/config';
+import { getPricing, IEEE_EARLY_BIRD_WINDOW_MS } from '@/lib/razorpay/config';
 import { CreatePaymentLinkResponse } from '@/types/payment';
 
 export async function POST(request: NextRequest) {
@@ -22,7 +22,7 @@ export async function POST(request: NextRequest) {
     const { data: existingUser, error: existingUserError } = await supabase
       .from('users')
       .select(
-        'payment_id, is_ieee_member, name, phone, college, department, degree, year, food_preference, tshirt_size, ieee_student_branch, ieee_membership_no'
+        'payment_id, is_ieee_member, ieee_verified_at, name, phone, college, department, degree, year, food_preference, tshirt_size, ieee_student_branch, ieee_membership_no'
       )
       .eq('id', user.id)
       .single();
@@ -73,10 +73,14 @@ export async function POST(request: NextRequest) {
     }
 
     const membershipType = existingUser.is_ieee_member ? 'ieee' : 'non_ieee';
+    const ieeeEarlyBirdWindowExpired =
+      membershipType === 'ieee' &&
+      (!existingUser.ieee_verified_at ||
+        new Date(existingUser.ieee_verified_at).getTime() + IEEE_EARLY_BIRD_WINDOW_MS <= Date.now());
 
     // Get pricing
-    let pricing = getPricing(membershipType);
-    let forceRegular = false;
+    let pricing = getPricing(membershipType, ieeeEarlyBirdWindowExpired);
+    let forceRegular = ieeeEarlyBirdWindowExpired;
     let reservationId: string | null = null;
     const expiresAt = new Date(Date.now() + 16 * 60 * 1000);
 

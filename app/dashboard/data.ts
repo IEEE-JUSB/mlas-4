@@ -34,6 +34,8 @@ export const dashboardResponseSchema = z.object({
       amount: z.number().optional(),
       isEarlyBird: z.boolean().optional(),
       requiresIeeeVerification: z.boolean().optional(),
+      isIeeeEarlyBirdWindowExpired: z.boolean().optional(),
+      ieeeEarlyBirdDeadline: z.string().nullable().optional(),
       paymentId: z.string().nullable().optional(),
     })
     .optional(),

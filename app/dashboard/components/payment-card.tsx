@@ -12,6 +12,7 @@ type PaymentCardProps = {
   isRegistrationComplete: boolean;
   isEarlyBird?: boolean;
   requiresIeeeVerification?: boolean;
+  isIeeeEarlyBirdWindowExpired?: boolean;
 };
 
 export function PaymentCard({
@@ -20,6 +21,7 @@ export function PaymentCard({
   isRegistrationComplete,
   isEarlyBird,
   requiresIeeeVerification,
+  isIeeeEarlyBirdWindowExpired,
 }: PaymentCardProps) {
   const isPaid = status === "completed" && isRegistrationComplete;
   const [isLoading, setIsLoading] = useState(false);
@@ -78,14 +80,21 @@ export function PaymentCard({
                 Your IEEE membership is awaiting admin verification. Payment will unlock after approval.
               </p>
             ) : (
-              <p className="mt-1 text-2xl font-semibold text-zinc-900 dark:text-zinc-100">
-                ₹{amount}
-                {isEarlyBird && !isPaid && (
-                <span className="ml-2 text-xs font-normal text-green-600 dark:text-green-400">
-                  (Early bird offer applied)
-                </span>
+              <>
+                <p className="mt-1 text-2xl font-semibold text-zinc-900 dark:text-zinc-100">
+                  ₹{amount}
+                  {isEarlyBird && !isPaid && (
+                    <span className="ml-2 text-xs font-normal text-green-600 dark:text-green-400">
+                      (Early bird offer applied)
+                    </span>
+                  )}
+                </p>
+                {isIeeeEarlyBirdWindowExpired && !isPaid && (
+                  <p className="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
+                    Your two-day IEEE early-bird window has ended; regular IEEE pricing applies.
+                  </p>
                 )}
-              </p>
+              </>
             )}
           </div>
           <button

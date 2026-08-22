@@ -1,7 +1,11 @@
 import { createClient } from "@/lib/supabase/server";
 import { type NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
-import { getPricing, EARLY_BIRD_SEAT_LIMITS } from "@/lib/razorpay/config";
+import {
+  EARLY_BIRD_SEAT_LIMITS,
+  getPricing,
+  IEEE_EARLY_BIRD_WINDOW_MS,
+} from "@/lib/razorpay/config";
 
 const ProfileData = z.object({
   phone: z.string().regex(/^\d{10}$/, "Phone number should be 10 digits long"),
@@ -87,6 +91,13 @@ export async function GET(request: NextRequest) {
   const ieeePairValid = hasIeeeBranch === hasIeeeMembershipNo;
   const isIeeeApplicant = hasIeeeBranch && hasIeeeMembershipNo;
   const requiresIeeeVerification = isIeeeApplicant && !profileRow?.is_ieee_member;
+  const ieeeEarlyBirdDeadline = profileRow?.ieee_verified_at
+    ? new Date(new Date(profileRow.ieee_verified_at).getTime() + IEEE_EARLY_BIRD_WINDOW_MS)
+    : null;
+  const isIeeeEarlyBirdWindowExpired =
+    Boolean(profileRow?.is_ieee_member) &&
+    Boolean(ieeeEarlyBirdDeadline) &&
+    ieeeEarlyBirdDeadline!.getTime() <= Date.now();
 
   const requiredFieldsComplete =
     Boolean(profileRow) &&
@@ -131,7 +142,11 @@ export async function GET(request: NextRequest) {
     }
 
     // Apply pricing based on early bird availability using getPricing function
-    const pricing = getPricing(membershipType, !isEarlyBird);
+    if (isIeeeEarlyBirdWindowExpired) {
+      isEarlyBird = false;
+    }
+
+    const pricing = getPricing(membershipType, !isEarlyBird || isIeeeEarlyBirdWindowExpired);
     amount = pricing.amount / 100; // Convert from paise to rupees
   }
 
@@ -151,6 +166,8 @@ export async function GET(request: NextRequest) {
       amount,
       isEarlyBird,
       requiresIeeeVerification,
+      isIeeeEarlyBirdWindowExpired,
+      ieeeEarlyBirdDeadline: ieeeEarlyBirdDeadline?.toISOString() ?? null,
       paymentId: profileRow?.payment_id ?? null,
     },
     isProfileIncomplete,

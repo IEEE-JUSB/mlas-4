@@ -1,9 +1,17 @@
 begin;
 
-create type public.pricing_tier as enum ('early_bird', 'regular');
+do $$
+begin
+  if not exists (
+    select 1 from pg_type where typname = 'pricing_tier' and typnamespace = 'public'::regnamespace
+  ) then
+    create type public.pricing_tier as enum ('early_bird', 'regular');
+  end if;
+end
+$$;
 
 alter table public.users
-  add column pricing_tier public.pricing_tier null;
+  add column if not exists pricing_tier public.pricing_tier null;
 
 create or replace function public.protect_users_workflow_columns()
 returns trigger

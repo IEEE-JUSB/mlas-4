@@ -150,3 +150,40 @@ export async function sendReceiptEmail({
 
   console.log('Email sent:', data.id);
 }
+
+export async function sendIeeeVerificationEmail({
+  email,
+  userName,
+  earlyBirdDeadline,
+}: {
+  email: string;
+  userName: string;
+  earlyBirdDeadline: Date;
+}): Promise<void> {
+  const fromEmail = process.env.RESEND_FROM_EMAIL;
+  if (!fromEmail) {
+    throw new Error('RESEND_FROM_EMAIL environment variable is not configured');
+  }
+
+  const resend = new Resend(process.env.RESEND_API_KEY);
+  const deadline = earlyBirdDeadline.toLocaleString('en-IN', {
+    dateStyle: 'medium',
+    timeStyle: 'short',
+  });
+  const { error } = await resend.emails.send({
+    from: fromEmail,
+    to: email,
+    subject: 'Your IEEE membership has been verified',
+    html: `<div style="font-family: Arial, sans-serif; line-height: 1.5;">
+      <p>Hi ${escapeHtml(userName)},</p>
+      <p>Your IEEE membership has been verified. You can now complete your MLAS 4.0 registration.</p>
+      <p><strong>Early-bird IEEE pricing is available for two days, until ${escapeHtml(deadline)}.</strong>
+      After that, regular IEEE pricing will apply.</p>
+      <p>Open your dashboard and select <strong>Book Your Seat</strong> when you are ready. Each payment link is valid for 16 minutes, but you can create a fresh link during your early-bird window.</p>
+    </div>`,
+  });
+
+  if (error) {
+    throw new Error(`Failed to send IEEE verification email: ${error.message}`);
+  }
+}

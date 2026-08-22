@@ -40,5 +40,7 @@ export function getPricing(membershipType: MembershipType, forceRegular = false)
   };
 }
 
+export const IEEE_EARLY_BIRD_WINDOW_MS = 2 * 24 * 60 * 60 * 1000;
+
 // Export seat limits for checking availability
 export { EARLY_BIRD_SEAT_LIMITS };

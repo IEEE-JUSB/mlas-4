@@ -53,6 +53,7 @@ async function DashboardContent() {
           isRegistrationComplete={isRegistrationComplete}
           isEarlyBird={payment.isEarlyBird}
           requiresIeeeVerification={payment.requiresIeeeVerification}
+          isIeeeEarlyBirdWindowExpired={payment.isIeeeEarlyBirdWindowExpired}
         />
       </section>
       <ProfileSection email={user.email} profile={profile} />
