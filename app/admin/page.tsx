@@ -10,6 +10,7 @@ export type PendingIeeeRequest = {
   name: string | null;
   ieee_student_branch: string | null;
   ieee_membership_no: string | null;
+  ieee_membership_proof_url: string | null;
   updated_at: string | null;
 };
 
@@ -51,7 +52,9 @@ export default function AdminPage() {
 
       const { data: pendingRows, error: pendingError } = await supabase
         .from("users")
-        .select("id, name, ieee_student_branch, ieee_membership_no, updated_at")
+        .select(
+          "id, name, ieee_student_branch, ieee_membership_no, ieee_membership_proof_url, updated_at",
+        )
         .not("ieee_student_branch", "is", null)
         .not("ieee_membership_no", "is", null)
         .eq("is_ieee_member", false)
@@ -75,6 +78,7 @@ export default function AdminPage() {
           name: row.name,
           ieee_student_branch: row.ieee_student_branch,
           ieee_membership_no: row.ieee_membership_no,
+          ieee_membership_proof_url: row.ieee_membership_proof_url,
           updated_at: row.updated_at,
         })),
       );

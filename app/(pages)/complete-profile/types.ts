@@ -12,6 +12,7 @@ export type FormErrors = {
   tShirtSize?: string;
   ieeeStudentBranch?: string;
   ieeeMembershipNumber?: string;
+  ieeeMembershipProofUrl?: string;
   general?: string;
 };
 
@@ -26,5 +27,6 @@ export type ProfileApiResponse = {
     tshirtSize?: TshirtSize | null;
     ieeeStudentBranch?: string | null;
     ieeeMembershipNumber?: string | null;
+    ieeeMembershipProofUrl?: string | null;
   } | null;
 };

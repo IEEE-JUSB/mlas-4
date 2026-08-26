@@ -150,6 +150,24 @@ export function AdminIeeeVerificationClient({
                     </div>
                     <div>
                       <dt className="text-xs uppercase tracking-[0.15em] text-zinc-500">
+                        Membership proof link
+                      </dt>
+                      <dd className="mt-1 break-all text-blue-600 underline dark:text-blue-400">
+                        {selectedRequest.ieee_membership_proof_url ? (
+                          <a
+                            href={selectedRequest.ieee_membership_proof_url}
+                            target="_blank"
+                            rel="noreferrer"
+                          >
+                            Open proof link
+                          </a>
+                        ) : (
+                          "Not provided"
+                        )}
+                      </dd>
+                    </div>
+                    <div>
+                      <dt className="text-xs uppercase tracking-[0.15em] text-zinc-500">
                         Submitted
                       </dt>
                       <dd className="mt-1">

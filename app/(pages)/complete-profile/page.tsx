@@ -30,6 +30,7 @@ export default function CompleteProfilePage() {
   const [showIeeeSection, setShowIeeeSection] = useState(false);
   const [ieeeStudentBranch, setIeeeStudentBranch] = useState("");
   const [ieeeMembershipNumber, setIeeeMembershipNumber] = useState("");
+  const [ieeeMembershipProofUrl, setIeeeMembershipProofUrl] = useState("");
 
   const [prefillLoading, setPrefillLoading] = useState(true);
   const [loading, setLoading] = useState(false);
@@ -58,10 +59,14 @@ export default function CompleteProfilePage() {
         setTshirtSize(profile.tshirtSize ?? null);
         setIeeeStudentBranch(profile.ieeeStudentBranch ?? "");
         setIeeeMembershipNumber(profile.ieeeMembershipNumber ?? "");
+        setIeeeMembershipProofUrl(profile.ieeeMembershipProofUrl ?? "");
 
         const hasIeeeData = Boolean(
           (profile.ieeeStudentBranch && profile.ieeeStudentBranch.trim()) ||
-          (profile.ieeeMembershipNumber && profile.ieeeMembershipNumber.trim()),
+          (profile.ieeeMembershipNumber &&
+            profile.ieeeMembershipNumber.trim()) ||
+          (profile.ieeeMembershipProofUrl &&
+            profile.ieeeMembershipProofUrl.trim()),
         );
 
         if (hasIeeeData) {
@@ -124,6 +129,12 @@ export default function CompleteProfilePage() {
       if (!ieeeMembershipNumber.trim()) {
         newErrors.ieeeMembershipNumber = "IEEE Membership Number is required.";
       }
+      if (!ieeeMembershipProofUrl.trim()) {
+        newErrors.ieeeMembershipProofUrl =
+          "Please share a public link to your IEEE membership card or proof.";
+      } else if (!/^https?:\/\//i.test(ieeeMembershipProofUrl.trim())) {
+        newErrors.ieeeMembershipProofUrl = "Please enter a valid public URL.";
+      }
     }
 
     return newErrors;
@@ -164,6 +175,7 @@ export default function CompleteProfilePage() {
             ? {
                 ieeeStudentBranch,
                 ieeeMembershipNumber,
+                ieeeMembershipProofUrl: ieeeMembershipProofUrl.trim(),
               }
             : {}),
         }),
@@ -254,6 +266,7 @@ export default function CompleteProfilePage() {
             showIeeeSection={showIeeeSection}
             ieeeStudentBranch={ieeeStudentBranch}
             ieeeMembershipNumber={ieeeMembershipNumber}
+            ieeeMembershipProofUrl={ieeeMembershipProofUrl}
             errors={errors}
             onFoodPreferenceChange={(value) => {
               setFoodPreference(value);
@@ -284,6 +297,10 @@ export default function CompleteProfilePage() {
             onIeeeMembershipNumberChange={(value) => {
               setIeeeMembershipNumber(value);
               clearError("ieeeMembershipNumber");
+            }}
+            onIeeeMembershipProofUrlChange={(value) => {
+              setIeeeMembershipProofUrl(value);
+              clearError("ieeeMembershipProofUrl");
             }}
           />
           {errors.general && (
