@@ -39,6 +39,7 @@ export const dashboardResponseSchema = z.object({
       paymentId: z.string().nullable().optional(),
     })
     .optional(),
+  isIeeeMember: z.boolean().optional(),
   isProfileIncomplete: z.boolean().optional(),
 });
 
