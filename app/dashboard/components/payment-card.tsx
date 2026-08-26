@@ -27,7 +27,8 @@ export function PaymentCard({
   const [isLoading, setIsLoading] = useState(false);
 
   const handlePayment = async () => {
-    if (!isRegistrationComplete || requiresIeeeVerification || isLoading) return;
+    if (!isRegistrationComplete || requiresIeeeVerification || isLoading)
+      return;
 
     setIsLoading(true);
     try {
@@ -69,7 +70,9 @@ export function PaymentCard({
         <div className="mt-6 flex items-center justify-between gap-4">
           <div className="max-w-sm">
             <p className="text-[10px] uppercase tracking-[0.16em] text-zinc-500 dark:text-zinc-400">
-              {isRegistrationComplete && !requiresIeeeVerification ? "Registration fee" : "Payment status"}
+              {isRegistrationComplete && !requiresIeeeVerification
+                ? "Registration fee"
+                : "Payment status"}
             </p>
             {!isRegistrationComplete ? (
               <p className="mt-1 text-sm font-medium text-zinc-700 dark:text-zinc-300">
@@ -77,7 +80,8 @@ export function PaymentCard({
               </p>
             ) : requiresIeeeVerification ? (
               <p className="mt-1 text-sm font-medium text-amber-700 dark:text-amber-300">
-                Your IEEE membership is awaiting admin verification. Payment will unlock after approval.
+                Your IEEE membership is awaiting admin verification. Payment
+                will unlock after approval.
               </p>
             ) : (
               <>
@@ -91,14 +95,20 @@ export function PaymentCard({
                 </p>
                 {isIeeeEarlyBirdWindowExpired && !isPaid && (
                   <p className="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
-                    Your two-day IEEE early-bird window has ended; regular IEEE pricing applies.
+                    Your two-day IEEE early-bird window has ended; regular IEEE
+                    pricing applies.
                   </p>
                 )}
               </>
             )}
           </div>
           <button
-            disabled={!isRegistrationComplete || requiresIeeeVerification || isLoading || isPaid}
+            disabled={
+              !isRegistrationComplete ||
+              requiresIeeeVerification ||
+              isLoading ||
+              isPaid
+            }
             onClick={handlePayment}
             className={`group/button flex items-center gap-2 rounded-md px-4 py-2.5 text-xs font-semibold text-white shadow-lg transition-all ${
               isRegistrationComplete && !requiresIeeeVerification && !isPaid
@@ -106,19 +116,27 @@ export function PaymentCard({
                 : "cursor-not-allowed bg-zinc-400/80 shadow-none"
             }`}
           >
-            <CreditCard className="h-3.5 w-3.5" />
-            {isLoading
-              ? "Processing..."
-              : isPaid
-                ? "Paid"
-                : requiresIeeeVerification
-                  ? "Awaiting IEEE Approval"
-                  : isRegistrationComplete
-                    ? "Book Your Seat"
-                    : "Complete Profile First"}
-            {isRegistrationComplete && !requiresIeeeVerification && !isPaid && !isLoading && (
-              <ArrowUpRight className="h-3.5 w-3.5 transition-transform group-hover/button:-translate-y-0.5 group-hover/button:translate-x-0.5" />
-            )}
+            <CreditCard
+              className="h-3.5 w-3.5 shrink-0"
+              style={{ minWidth: "0.875rem", minHeight: "0.875rem" }}
+            />
+            <span className="truncate">
+              {isLoading
+                ? "Processing..."
+                : isPaid
+                  ? "Paid"
+                  : requiresIeeeVerification
+                    ? "Awaiting IEEE Approval"
+                    : isRegistrationComplete
+                      ? "Book Your Seat"
+                      : "Complete Profile First"}
+            </span>
+            {isRegistrationComplete &&
+              !requiresIeeeVerification &&
+              !isPaid &&
+              !isLoading && (
+                <ArrowUpRight className="h-3.5 w-3.5 shrink-0 transition-transform group-hover/button:-translate-y-0.5 group-hover/button:translate-x-0.5" />
+              )}
           </button>
         </div>
       </div>

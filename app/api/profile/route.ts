@@ -90,9 +90,13 @@ export async function GET(request: NextRequest) {
   const hasIeeeMembershipNo = hasText(profileRow?.ieee_membership_no);
   const ieeePairValid = hasIeeeBranch === hasIeeeMembershipNo;
   const isIeeeApplicant = hasIeeeBranch && hasIeeeMembershipNo;
-  const requiresIeeeVerification = isIeeeApplicant && !profileRow?.is_ieee_member;
+  const requiresIeeeVerification =
+    isIeeeApplicant && !profileRow?.is_ieee_member;
   const ieeeEarlyBirdDeadline = profileRow?.ieee_verified_at
-    ? new Date(new Date(profileRow.ieee_verified_at).getTime() + IEEE_EARLY_BIRD_WINDOW_MS)
+    ? new Date(
+        new Date(profileRow.ieee_verified_at).getTime() +
+          IEEE_EARLY_BIRD_WINDOW_MS,
+      )
     : null;
   const isIeeeEarlyBirdWindowExpired =
     Boolean(profileRow?.is_ieee_member) &&
@@ -119,18 +123,20 @@ export async function GET(request: NextRequest) {
   let isEarlyBird = false;
   if (isRegistrationCompleted && !requiresIeeeVerification) {
     const isIeeeMember = Boolean(profileRow?.is_ieee_member);
-    const membershipType = isIeeeMember ? 'ieee' : 'non_ieee';
+    const membershipType = isIeeeMember ? "ieee" : "non_ieee";
     const seatLimit = EARLY_BIRD_SEAT_LIMITS[membershipType];
 
     // Use SECURITY DEFINER RPC for seat counting to bypass RLS restrictions
-    const { data: seatData, error: seatError } = await supabase
-      .rpc('get_seat_availability_display', {
+    const { data: seatData, error: seatError } = await supabase.rpc(
+      "get_seat_availability_display",
+      {
         p_is_ieee_member: isIeeeMember,
         p_seat_limit: seatLimit,
-      });
+      },
+    );
 
     if (seatError) {
-      console.error('Failed to check seat availability:', seatError);
+      console.error("Failed to check seat availability:", seatError);
       // Fallback to regular pricing if seat check fails
       isEarlyBird = false;
     } else if (seatData && seatData.length > 0) {
@@ -146,13 +152,17 @@ export async function GET(request: NextRequest) {
       isEarlyBird = false;
     }
 
-    const pricing = getPricing(membershipType, !isEarlyBird || isIeeeEarlyBirdWindowExpired);
+    const pricing = getPricing(
+      membershipType,
+      !isEarlyBird || isIeeeEarlyBirdWindowExpired,
+    );
     amount = pricing.amount / 100; // Convert from paise to rupees
   }
 
   const responseBody = {
     user,
     profile,
+    isIeeeMember: Boolean(profileRow?.is_ieee_member),
     registration: profileRow
       ? {
           id: profileRow.id,
