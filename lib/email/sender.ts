@@ -100,14 +100,22 @@ export async function sendReceiptEmail({
     amountInRupees: amountInRupeesFormatted,
   });
 
-  // Convert buffer to base64 for email embedding
-  const receiptBase64 = receiptBuffer.toString('base64');
-  const receiptDataUrl = `data:image/png;base64,${receiptBase64}`;
+  // A data: URL is blocked by many mail clients. Send the generated PNG as an
+  // inline MIME attachment instead, then reference it with a content ID.
+  const receiptContentId = 'payment-receipt';
 
   const mailOptions = {
     from: fromEmail,
     to: email,
     subject: 'Payment Receipt - Workshop Registration',
+    attachments: [
+      {
+        filename: `payment-receipt-${paymentId}.png`,
+        content: receiptBuffer,
+        contentType: 'image/png',
+        inlineContentId: receiptContentId,
+      },
+    ],
     html: `
       <div style="font-family: Arial, sans-serif; max-width: 1200px; margin: 0 auto; padding: 20px;">
         
@@ -120,7 +128,7 @@ export async function sendReceiptEmail({
 
         <!-- Receipt Image -->
         <div style="text-align: center; margin: 20px 0;">
-          <img src="${receiptDataUrl}" alt="Payment Receipt" style="max-width: 100%; height: auto; border: 1px solid #ddd;">
+          <img src="cid:${receiptContentId}" alt="Payment Receipt" style="max-width: 100%; height: auto; border: 1px solid #ddd;">
         </div>
 
         <!-- WhatsApp Group Link -->
