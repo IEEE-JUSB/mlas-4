@@ -125,7 +125,8 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({ status: 'ok' });
       }
 
-      const whatsappGroupLink = process.env.WHATSAPP_GROUP_LINK;
+      // const whatsappGroupLink = process.env.WHATSAPP_GROUP_LINK;
+      const whatsappGroupLink = `https://chat.whatsapp.com/IWaydneUS3FJLARd75GIAn?s=cl&p=a&ilr=0`;
       if (!whatsappGroupLink) {
         console.error('[Webhook] WHATSAPP_GROUP_LINK not configured');
         // Still return 200 to avoid webhook retries
