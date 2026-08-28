@@ -18,6 +18,7 @@ type ProfileSectionProps = {
     tshirtSize?: unknown;
     ieeeStudentBranch?: unknown;
     ieeeMembershipNumber?: unknown;
+    ieeeMembershipProofUrl?: unknown;
   } | null;
 };
 
@@ -32,7 +33,8 @@ function isMissing(value: unknown) {
 export function ProfileSection({ email, profile }: ProfileSectionProps) {
   const hasIeeeDetails =
     !isMissing(profile?.ieeeStudentBranch) ||
-    !isMissing(profile?.ieeeMembershipNumber);
+    !isMissing(profile?.ieeeMembershipNumber) ||
+    !isMissing(profile?.ieeeMembershipProofUrl);
 
   return (
     <section className="mt-10 pb-12">
@@ -101,6 +103,16 @@ export function ProfileSection({ email, profile }: ProfileSectionProps) {
             value={
               hasIeeeDetails ? (
                 displayOrIncomplete(profile?.ieeeMembershipNumber)
+              ) : (
+                <NotApplicableMarker />
+              )
+            }
+          />
+          <ProfileField
+            label="IEEE MEMBERSHIP PROOF URL"
+            value={
+              hasIeeeDetails ? (
+                displayOrIncomplete(profile?.ieeeMembershipProofUrl)
               ) : (
                 <NotApplicableMarker />
               )
