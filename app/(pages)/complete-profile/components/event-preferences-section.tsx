@@ -17,6 +17,7 @@ type EventPreferencesSectionProps = {
   showIeeeSection: boolean;
   ieeeStudentBranch: string;
   ieeeMembershipNumber: string;
+  ieeeMembershipProofUrl: string;
   errors: FormErrors;
   onFoodPreferenceChange: (value: FoodPreference) => void;
   onTshirtSizeChange: (value: TshirtSize) => void;
@@ -24,6 +25,7 @@ type EventPreferencesSectionProps = {
   onShowIeeeSectionToggle: () => void;
   onIeeeStudentBranchChange: (value: string) => void;
   onIeeeMembershipNumberChange: (value: string) => void;
+  onIeeeMembershipProofUrlChange: (value: string) => void;
 };
 
 export function EventPreferencesSection({
@@ -33,6 +35,7 @@ export function EventPreferencesSection({
   showIeeeSection,
   ieeeStudentBranch,
   ieeeMembershipNumber,
+  ieeeMembershipProofUrl,
   errors,
   onFoodPreferenceChange,
   onTshirtSizeChange,
@@ -40,6 +43,7 @@ export function EventPreferencesSection({
   onShowIeeeSectionToggle,
   onIeeeStudentBranchChange,
   onIeeeMembershipNumberChange,
+  onIeeeMembershipProofUrlChange,
 }: EventPreferencesSectionProps) {
   return (
     <div className="relative overflow-hidden rounded-lg border border-zinc-200 dark:border-zinc-800 bg-transparent/5 shadow-sm">
@@ -163,55 +167,93 @@ export function EventPreferencesSection({
           </button>
 
           {showIeeeSection && isIeeeMember && (
-            <div className="grid gap-4 pt-2 sm:grid-cols-2">
-              <div className="space-y-2">
-                <Label
-                  htmlFor="ieeeStudentBranch"
-                  className="text-[10px] font-semibold uppercase tracking-[0.16em] text-zinc-500 dark:text-zinc-400"
-                >
-                  IEEE Student Branch
-                </Label>
-                <Input
-                  id="ieeeStudentBranch"
-                  name="ieeeStudentBranch"
-                  placeholder="e.g. IEEE SB Jadavpur"
-                  value={ieeeStudentBranch}
-                  onChange={(e) => onIeeeStudentBranchChange(e.target.value)}
-                  className={cn(
-                    "h-10 rounded-md dark:border-zinc-200 border-zinc-800 bg-transparent text-sm focus-visible:ring-1 focus-visible:ring-blue-500",
-                    errors.ieeeStudentBranch &&
-                      "border-red-500/50 focus-visible:ring-red-500/50",
+            <div className="grid gap-4 pt-2">
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div className="space-y-2">
+                  <Label
+                    htmlFor="ieeeStudentBranch"
+                    className="text-[10px] font-semibold uppercase tracking-[0.16em] text-zinc-500 dark:text-zinc-400"
+                  >
+                    IEEE Student Branch
+                  </Label>
+                  <Input
+                    id="ieeeStudentBranch"
+                    name="ieeeStudentBranch"
+                    placeholder="e.g. IEEE SB Jadavpur"
+                    value={ieeeStudentBranch}
+                    onChange={(e) => onIeeeStudentBranchChange(e.target.value)}
+                    className={cn(
+                      "h-10 rounded-md dark:border-zinc-200 border-zinc-800 bg-transparent text-sm focus-visible:ring-1 focus-visible:ring-blue-500",
+                      errors.ieeeStudentBranch &&
+                        "border-red-500/50 focus-visible:ring-red-500/50",
+                    )}
+                  />
+                  {errors.ieeeStudentBranch && (
+                    <p className="text-xs text-red-500 dark:text-red-400">
+                      {errors.ieeeStudentBranch}
+                    </p>
                   )}
-                />
-                {errors.ieeeStudentBranch && (
-                  <p className="text-xs text-red-500 dark:text-red-400">
-                    {errors.ieeeStudentBranch}
-                  </p>
-                )}
+                </div>
+
+                <div className="space-y-2">
+                  <Label
+                    htmlFor="ieeeMembershipNumber"
+                    className="text-[10px] font-semibold uppercase tracking-[0.16em] text-zinc-500 dark:text-zinc-400"
+                  >
+                    IEEE Membership Number
+                  </Label>
+                  <Input
+                    id="ieeeMembershipNumber"
+                    name="ieeeMembershipNumber"
+                    placeholder="Enter your IEEE membership number"
+                    value={ieeeMembershipNumber}
+                    onChange={(e) =>
+                      onIeeeMembershipNumberChange(e.target.value)
+                    }
+                    className={cn(
+                      "h-10 rounded-md dark:border-zinc-200 border-zinc-800 bg-transparent text-sm focus-visible:ring-1 focus-visible:ring-blue-500",
+                      errors.ieeeMembershipNumber &&
+                        "border-red-500/50 focus-visible:ring-red-500/50",
+                    )}
+                  />
+                  {errors.ieeeMembershipNumber && (
+                    <p className="text-xs text-red-500 dark:text-red-400">
+                      {errors.ieeeMembershipNumber}
+                    </p>
+                  )}
+                </div>
               </div>
 
-              <div className="space-y-2">
+              <div className="space-y-2 rounded-md border border-blue-200 bg-blue-500/5 p-3 dark:border-blue-500/30">
                 <Label
-                  htmlFor="ieeeMembershipNumber"
+                  htmlFor="ieeeMembershipProofUrl"
                   className="text-[10px] font-semibold uppercase tracking-[0.16em] text-zinc-500 dark:text-zinc-400"
                 >
-                  IEEE Membership Number
+                  IEEE Membership Card / Proof Link
                 </Label>
                 <Input
-                  id="ieeeMembershipNumber"
-                  name="ieeeMembershipNumber"
-                  placeholder="Enter your IEEE membership number"
-                  value={ieeeMembershipNumber}
-                  onChange={(e) => onIeeeMembershipNumberChange(e.target.value)}
+                  id="ieeeMembershipProofUrl"
+                  name="ieeeMembershipProofUrl"
+                  type="url"
+                  placeholder="https://drive.google.com/.... or any public link"
+                  value={ieeeMembershipProofUrl}
+                  onChange={(e) =>
+                    onIeeeMembershipProofUrlChange(e.target.value)
+                  }
                   className={cn(
                     "h-10 rounded-md dark:border-zinc-200 border-zinc-800 bg-transparent text-sm focus-visible:ring-1 focus-visible:ring-blue-500",
-                    errors.ieeeMembershipNumber &&
+                    errors.ieeeMembershipProofUrl &&
                       "border-red-500/50 focus-visible:ring-red-500/50",
                   )}
                 />
-                {errors.ieeeMembershipNumber && (
+                <p className="text-xs text-zinc-600 dark:text-zinc-300">
+                  Please share a public Google Drive, Dropbox, or other
+                  accessible link to your IEEE membership card or proof. This
+                  helps our team verify your membership quickly.
+                </p>
+                {errors.ieeeMembershipProofUrl && (
                   <p className="text-xs text-red-500 dark:text-red-400">
-                    {errors.ieeeMembershipNumber}
+                    {errors.ieeeMembershipProofUrl}
                   </p>
                 )}
               </div>

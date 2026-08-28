@@ -35,6 +35,11 @@ const ProfileData = z.object({
 
   ieeeStudentBranch: z.string().optional(),
   ieeeMembershipNumber: z.string().optional(),
+  ieeeMembershipProofUrl: z
+    .string()
+    .url({ message: "Please provide a valid public URL." })
+    .optional()
+    .or(z.literal("")),
 });
 
 const isNullable = (value: unknown): value is null | undefined =>
@@ -83,6 +88,7 @@ export async function GET(request: NextRequest) {
         tshirtSize: profileRow.tshirt_size,
         ieeeStudentBranch: profileRow.ieee_student_branch,
         ieeeMembershipNumber: profileRow.ieee_membership_no,
+        ieeeMembershipProofUrl: profileRow.ieee_membership_proof_url,
       }
     : null;
 
@@ -227,6 +233,7 @@ export async function POST(request: NextRequest) {
       tshirtSize,
       ieeeStudentBranch,
       ieeeMembershipNumber,
+      ieeeMembershipProofUrl,
     } = validatedData;
     const updatePayload = {
       phone: phone,
@@ -238,6 +245,7 @@ export async function POST(request: NextRequest) {
       tshirt_size: tshirtSize,
       ieee_student_branch: ieeeStudentBranch,
       ieee_membership_no: ieeeMembershipNumber,
+      ieee_membership_proof_url: ieeeMembershipProofUrl || null,
     };
 
     const { error: dbError } = await supabase
