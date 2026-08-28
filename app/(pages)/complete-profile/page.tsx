@@ -284,6 +284,7 @@ export default function CompleteProfilePage() {
                   ...prev,
                   ieeeStudentBranch: undefined,
                   ieeeMembershipNumber: undefined,
+                  ieeeMembershipProofUrl: undefined,
                 }));
               } else {
                 setShowIeeeSection(true);
