@@ -1,6 +1,6 @@
-//this file is slightly buggy
 import { type EmailOtpType } from "@supabase/supabase-js";
 import { NextResponse, type NextRequest } from "next/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
 
 export async function GET(request: NextRequest) {
@@ -23,15 +23,24 @@ export async function GET(request: NextRequest) {
   }
 
   if (verifiedUser) {
-    const { error: dbError } = await supabase.from("users").upsert({
-      id: verifiedUser.id,
-      // email: verifiedUser.email, the public.users table doesnt have an email column so i removed this for now
-      name: verifiedUser.user_metadata?.name || "",
-    });
+    try {
+      const adminSupabase = createAdminClient();
 
-    if (!dbError) {
-      return NextResponse.redirect(`${origin}/login`);
+      await adminSupabase.from("users").upsert(
+        {
+          id: verifiedUser.id,
+          name: verifiedUser.user_metadata?.name || "",
+        },
+        { onConflict: "id" },
+      );
+    } catch (error) {
+      console.error(
+        "Failed to provision users row in /api/confirm-email",
+        error,
+      );
     }
+
+    return NextResponse.redirect(`${origin}/login`);
   }
 
   // 4. Fallback on Verification or DB Error
