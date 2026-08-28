@@ -68,7 +68,8 @@ export async function POST(request: NextRequest) {
     if (serviceRoleKey) {
       const adminSupabase = createAdminClient();
 
-      // Provision a matching public.users row at sign-up time.
+      // Provision a matching public.users row at sign-up time, but do not
+      // fail registration if the profile write is temporarily unavailable.
       const { error: insertError } = await adminSupabase.from("users").upsert(
         {
           id: data.user.id,
@@ -79,12 +80,17 @@ export async function POST(request: NextRequest) {
       );
 
       if (insertError) {
-        return NextResponse.json({ error: insertError.message }, { status: 400 });
+        console.warn(
+          "Failed to provision users row during /api/register",
+          insertError,
+        );
       }
     } else {
       // Avoid hard failure in dev if service role key is not configured.
       // The confirm-email route can still provision the row after verification.
-      console.warn("SUPABASE_SERVICE_ROLE_KEY is missing; skipped users upsert in /api/register");
+      console.warn(
+        "SUPABASE_SERVICE_ROLE_KEY is missing; skipped users upsert in /api/register",
+      );
     }
 
     return NextResponse.json(
@@ -95,8 +101,7 @@ export async function POST(request: NextRequest) {
     console.error("Register route error:", err);
     return NextResponse.json(
       {
-        error:
-          err instanceof Error ? err.message : "Internal Server Error",
+        error: err instanceof Error ? err.message : "Internal Server Error",
       },
       { status: 500 },
     );
