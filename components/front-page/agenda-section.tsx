@@ -1,10 +1,10 @@
-'use client';
+"use client";
 
-import { useEffect, useRef } from 'react';
-import gsap from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { useEffect, useRef } from "react";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 
-if (typeof window !== 'undefined') {
+if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
 }
 
@@ -16,67 +16,75 @@ interface AgendaItem {
 }
 
 const AGENDA_DATA: AgendaItem[] = [
-  // Day 1
   {
-    id: 'd1-1',
-    day: 'Day 1',
-    title: 'Introductory Lectures',
-    blurb: 'Python, LLM, Tokens and Prompting Fundamentals.',
+    id: "next-token-predictors",
+    day: "Day 1",
+    title: "How LLMs Actually Think. PS: They don't",
+    blurb:
+      "Watch how the weights calibrate, understanding exactly what you're building on top of before you build anything.",
   },
   {
-    id: 'd1-2',
-    day: 'Day 1',
-    title: 'LLM APIs & AI Loops',
-    blurb: 'Introduction to LLM APIs and the perceive-reason-act-observe loop of AI Agents.',
+    id: "prompting-techniques",
+    day: "Day 1",
+    title: "Prompting Like an Engineer",
+    blurb:
+      "Zero-shot, few-shot, chain-of-thought, hands-on techniques that get dramatically better output from the same model.",
   },
   {
-    id: 'd1-3',
-    day: 'Day 1',
-    title: 'ReAct Agent from Scratch',
-    blurb: 'Building a reasoning-and-acting agent from scratch.',
+    id: "context-engineering",
+    day: "Day 1",
+    title: "Context Windows & Context Engineering",
+    blurb:
+      "More context isn't always better. Learn to curate exactly what your model needs to see, and why the rest hurts you.",
   },
   {
-    id: 'd1-4',
-    day: 'Day 1',
-    title: 'Agent Memory Systems',
-    blurb: 'Short-term conversation buffers vs long-term vector memory.',
+    id: "agentic-ai-foundations",
+    day: "Day 1",
+    title: "Foundations of Agentic AI",
+    blurb:
+      "Agents vs. Agentic AI vs. Gen AI - map the landscape and see where real autonomy actually begins.",
   },
   {
-    id: 'd1-5',
-    day: 'Day 1',
-    title: 'Retrieval-Augmented Generation',
-    blurb: 'Introduction to Retrieval-Augmented Generation (RAG).',
-  },
-  // Day 2
-  {
-    id: 'd2-1',
-    day: 'Day 2',
-    title: 'Agent Frameworks & Tools',
-    blurb: 'LangGraph walkthrough, tool-using agents, and coding tools like OpenCode.',
+    id: "build-first-agent",
+    day: "Day 1",
+    title: "Build Your First Agent",
+    blurb:
+      "Tool calling, the ReAct loop, and a live LangChain build - walk out with a working agent.",
   },
   {
-    id: 'd2-2',
-    day: 'Day 2',
-    title: 'Multi-Agent & Guardrails',
-    blurb: 'Multi-agent orchestration, Guardrails and evaluation via benchmarks.',
+    id: "why-multi-agent",
+    day: "Day 2",
+    title: "Why Multi-Agent?",
+    blurb:
+      "One agent hits a ceiling fast. Explore the patterns - Supervisor, Sequential, Swarm - that let agent teams outperform any single agent.",
   },
   {
-    id: 'd2-3',
-    day: 'Day 2',
-    title: 'End-to-End Case Study',
-    blurb: 'Applied case study: building an end-to-end agentic workflow.',
+    id: "langgraph-supervisor-build",
+    day: "Day 2",
+    title: "Orchestrating Agents with LangGraph",
+    blurb:
+      "Build a Supervisor system that routes real tasks between a Researcher and a Writer agent - your first coordinated agent team.",
   },
   {
-    id: 'd2-4',
-    day: 'Day 2',
-    title: 'Model Context Protocol (MCP)',
-    blurb: 'Connecting agents & skills via Model Context Protocol.',
+    id: "agent-challenge",
+    day: "Day 2",
+    title: "The Secret Agent Challenge Begins",
+    blurb:
+      "You'll get a mystery agent to work with. What it needs to do - and what you're up against - stays under wraps until you're in the room.",
   },
   {
-    id: 'd2-5',
-    day: 'Day 2',
-    title: 'Live Agentic Competition',
-    blurb: 'Building an agent to solve a live problem statement and benchmark evaluation.',
+    id: "self-debug-build",
+    day: "Day 2",
+    title: "Build & Win",
+    blurb:
+      "The clock starts, the rules are simple, and the leaderboard doesn't lie. Everything else, you'll figure out live.",
+  },
+  {
+    id: "leaderboard-reveal",
+    day: "Day 2",
+    title: "Leaderboard Reveal",
+    blurb:
+      "Every team's agent goes head-to-head on unseen problems. No judges, no debates - pure score.",
   },
 ];
 
@@ -100,17 +108,17 @@ export default function AgendaSection() {
       // ScrollTrigger animation drawing the central line as you scroll
       gsap.to(line, {
         strokeDashoffset: 0,
-        ease: 'none',
+        ease: "none",
         scrollTrigger: {
           trigger: containerRef.current,
-          start: 'top 70%',
-          end: 'bottom 80%',
+          start: "top 70%",
+          end: "bottom 80%",
           scrub: 0.5,
         },
       });
 
       // Reveal cards as scroll progresses
-      const nodes = gsap.utils.toArray<HTMLElement>('.timeline-card');
+      const nodes = gsap.utils.toArray<HTMLElement>(".timeline-card");
       nodes.forEach((node) => {
         gsap.fromTo(
           node,
@@ -121,10 +129,10 @@ export default function AgendaSection() {
             duration: 0.5,
             scrollTrigger: {
               trigger: node,
-              start: 'top 80%',
-              toggleActions: 'play none none reverse',
+              start: "top 80%",
+              toggleActions: "play none none reverse",
             },
-          }
+          },
         );
       });
     }, containerRef);
@@ -133,7 +141,10 @@ export default function AgendaSection() {
   }, []);
 
   return (
-    <section id="timeline" className="w-full py-20 sm:py-32 overflow-hidden relative">
+    <section
+      id="timeline"
+      className="w-full py-20 sm:py-32 overflow-hidden relative"
+    >
       <div className="max-w-5xl mx-auto px-4 sm:px-6">
         {/* Header */}
         <div className="text-center mb-16 sm:mb-24">
@@ -153,7 +164,7 @@ export default function AgendaSection() {
           {/* Central Vertical Animated SVG Line */}
           <svg
             className="absolute top-0 left-6 md:left-1/2 -translate-x-1/2 w-1 h-full pointer-events-none z-0"
-            style={{ overflow: 'visible' }}
+            style={{ overflow: "visible" }}
           >
             {/* Background dimmed line */}
             <line
@@ -194,7 +205,7 @@ export default function AgendaSection() {
                   {/* Alternating Row */}
                   <div
                     className={`relative flex items-center w-full ${
-                      isEven ? 'md:flex-row' : 'md:flex-row-reverse'
+                      isEven ? "md:flex-row" : "md:flex-row-reverse"
                     }`}
                   >
                     {/* Content Card Side (Left on Even, Right on Odd for Desktop) */}
@@ -202,8 +213,8 @@ export default function AgendaSection() {
                       <div
                         className={`timeline-card p-5 sm:p-6 rounded-2xl border border-zinc-200 dark:border-zinc-800/80 bg-zinc-50/80 dark:bg-zinc-950/80 backdrop-blur-sm shadow-sm transition-all duration-300 hover:border-purple-500/50 ${
                           isEven
-                            ? 'md:mr-10 md:text-right'
-                            : 'md:ml-10 md:text-left'
+                            ? "md:mr-10 md:text-right"
+                            : "md:ml-10 md:text-left"
                         }`}
                       >
                         <span className="text-xs font-bold text-purple-600 dark:text-purple-400">
