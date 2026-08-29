@@ -51,7 +51,7 @@ async function DashboardContent() {
         </div>
       ) : null}
 
-      {data.registration?.status === "payment completed" ? (
+      {payment.status === "completed" ? (
         <section className="mb-6 overflow-hidden rounded-lg border border-rose-200 bg-gradient-to-r from-rose-50 via-red-50 to-orange-50 p-5 shadow-sm dark:border-rose-800/50 dark:from-rose-950/30 dark:via-red-950/20 dark:to-orange-950/30">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div>
