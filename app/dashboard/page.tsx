@@ -65,7 +65,7 @@ async function DashboardContent() {
         />
       </section>
 
-      <PerksCard tshirtImageSrc="/tshirt.png" />
+      <PerksCard tshirtImageSrc="/dashboard/coming-soon.webp" />
 
       <ProfileSection email={user.email} profile={profile} />
     </>
