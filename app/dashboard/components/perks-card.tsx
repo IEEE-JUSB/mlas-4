@@ -38,7 +38,7 @@ export function PerksCard({ tshirtImageSrc }: PerksCardProps) {
                                     ✓
                                 </span>
                                 <span className="font-medium">
-                                    2 Days of Immersive ML & AI Hands-on Masterclasses
+                                    2 Days of Immersive ML & AI Hands-on Masterclasses, plus course materials to guide you through the event
                                 </span>
                             </li>
 
