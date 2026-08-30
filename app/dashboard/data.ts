@@ -20,6 +20,7 @@ export const dashboardResponseSchema = z.object({
       tshirtSize: z.string().nullable().optional(),
       ieeeStudentBranch: z.string().nullable().optional(),
       ieeeMembershipNumber: z.string().nullable().optional(),
+      ieeeMembershipProofUrl: z.string().nullable().optional(),
     })
     .nullable(),
   registration: z

@@ -1,4 +1,5 @@
 import { Suspense } from "react";
+import Link from "next/link";
 import { redirect } from "next/navigation";
 import type { Metadata } from "next";
 
@@ -50,10 +51,35 @@ async function DashboardContent() {
         </div>
       ) : null}
 
+      {payment.status === "completed" ? (
+        <section className="mb-6 overflow-hidden rounded-lg border border-rose-200 bg-gradient-to-r from-rose-50 via-red-50 to-orange-50 p-5 shadow-sm dark:border-rose-800/50 dark:from-rose-950/30 dark:via-red-950/20 dark:to-orange-950/30">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <h2 className="text-base font-semibold text-rose-900 dark:text-rose-100">
+                One More Step! Claim Your Official Event Tickets.
+              </h2>
+              <p className="mt-1 text-sm text-rose-800/90 dark:text-rose-200/90">
+                You have successfully registered with us. Now, click below to
+                finalize your booking and secure your entry passes.
+              </p>
+            </div>
+            <Link
+              href="https://antiviral.social/events/mlas-4"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex shrink-0 items-center justify-center rounded-md bg-rose-700 px-4 py-2 text-sm font-semibold text-white transition hover:bg-rose-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-500 focus-visible:ring-offset-2 dark:bg-rose-500 dark:text-rose-950 dark:hover:bg-rose-400"
+            >
+              Get Event Tickets
+            </Link>
+          </div>
+        </section>
+      ) : null}
+
       <section className="grid gap-4 lg:grid-cols-2">
         <RegistrationCard
           isRegistrationComplete={isRegistrationComplete}
           username={username}
+          registrationId={data.registration?.id}
         />
         <PaymentCard
           status={payment.status}
