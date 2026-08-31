@@ -14,8 +14,8 @@ const REGULAR_PRICING: Record<MembershipType, number> = {
 
 // Early bird seat limits
 const EARLY_BIRD_SEAT_LIMITS: Record<MembershipType, number> = {
-  ieee: 10,
-  non_ieee: 20,
+  ieee: 2,
+  non_ieee: 30,
 };
 
 export function getPricing(membershipType: MembershipType, forceRegular = false): PricingConfig {
