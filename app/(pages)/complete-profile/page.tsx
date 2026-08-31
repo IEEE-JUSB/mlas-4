@@ -92,10 +92,19 @@ export default function CompleteProfilePage() {
   function validateForm(): FormErrors {
     const newErrors: FormErrors = {};
 
-    if (!phone.trim()) {
+    const trimmedPhone = phone.trim();
+
+    if (!trimmedPhone) {
       newErrors.phone = "Phone number is required.";
-    } else if (phone.trim().length < 10) {
-      newErrors.phone = "Please enter a valid phone number.";
+    } else if (
+      trimmedPhone.startsWith("+91") ||
+      (trimmedPhone.startsWith("91") && trimmedPhone.length === 12)
+    ) {
+      newErrors.phone = "Please remove +91 or country code. Enter 10 digits only.";
+    } else if (trimmedPhone.length === 11 && trimmedPhone.startsWith("0")) {
+      newErrors.phone = "Please remove leading zero. Enter 10 digits only.";
+    } else if (!/^\d{10}$/.test(trimmedPhone)) {
+      newErrors.phone = "Please enter a valid 10-digit phone number without spaces or symbols.";
     }
 
     if (!college.trim()) {
@@ -173,10 +182,10 @@ export default function CompleteProfilePage() {
           tshirtSize: tShirtSize,
           ...(isIeeeMember
             ? {
-                ieeeStudentBranch,
-                ieeeMembershipNumber,
-                ieeeMembershipProofUrl: ieeeMembershipProofUrl.trim(),
-              }
+              ieeeStudentBranch,
+              ieeeMembershipNumber,
+              ieeeMembershipProofUrl: ieeeMembershipProofUrl.trim(),
+            }
             : {}),
         }),
       });
@@ -184,7 +193,7 @@ export default function CompleteProfilePage() {
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.error || "Failed to update profile.");
+        throw new Error(data.details || "Failed to update profile.");
       }
 
       router.push("/dashboard");
