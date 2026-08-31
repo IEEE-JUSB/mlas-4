@@ -23,33 +23,51 @@ export function PerksCard({ tshirtImageSrc }: PerksCardProps) {
                             </h2>
                         </div>
 
-                        <ul className="grid gap-3 sm:grid-cols-1 text-sm">
-                            <li className="flex items-center gap-3 text-zinc-800 dark:text-zinc-200">
-                                <span className="flex h-6 w-6 items-center justify-center rounded-full bg-blue-500/10 text-xs text-blue-500">
-                                    ✓
-                                </span>
-                                <span className="font-medium">
-                                    Official MLAS 4.0 Commemorative T-Shirt
-                                </span>
-                            </li>
-
-                            <li className="flex items-center gap-3 text-zinc-800 dark:text-zinc-200">
-                                <span className="flex h-6 w-6 items-center justify-center rounded-full bg-blue-500/10 text-xs text-blue-500">
-                                    ✓
-                                </span>
-                                <span className="font-medium">
-                                    2 Days of Immersive ML & AI Hands-on Masterclasses, plus course materials to guide you through the event
-                                </span>
-                            </li>
-
-                            <li className="flex items-center gap-3 text-zinc-800 dark:text-zinc-200">
-                                <span className="flex h-6 w-6 items-center justify-center rounded-full bg-blue-500/10 text-xs text-blue-500">
-                                    ✓
-                                </span>
-                                <span className="font-medium">
-                                    Complimentary Meals & Refreshments for Both Days
-                                </span>
-                            </li>
+                        <ul className="grid gap-3 text-sm sm:grid-cols-1">
+                          <li className="flex items-center gap-3 text-zinc-800 dark:text-zinc-200">
+                            <span className="flex h-6 w-6 items-center justify-center rounded-full bg-blue-500/10 text-xs text-blue-500">
+                              ✓
+                            </span>
+                            <span className="font-medium">
+                              2 Days of Immersive ML & AI Masterclasses led by Eminent Speakers
+                            </span>
+                          </li>
+                        
+                          <li className="flex items-center gap-3 text-zinc-800 dark:text-zinc-200">
+                            <span className="flex h-6 w-6 items-center justify-center rounded-full bg-blue-500/10 text-xs text-blue-500">
+                              ✓
+                            </span>
+                            <span className="font-medium">
+                              Hands-on Capstone Project & Live Final Competition
+                            </span>
+                          </li>
+                        
+                          <li className="flex items-center gap-3 text-zinc-800 dark:text-zinc-200">
+                            <span className="flex h-6 w-6 items-center justify-center rounded-full bg-blue-500/10 text-xs text-blue-500">
+                              ✓
+                            </span>
+                            <span className="font-medium">
+                              Curated Course Materials & Guided Resources
+                            </span>
+                          </li>
+                        
+                          <li className="flex items-center gap-3 text-zinc-800 dark:text-zinc-200">
+                            <span className="flex h-6 w-6 items-center justify-center rounded-full bg-blue-500/10 text-xs text-blue-500">
+                              ✓
+                            </span>
+                            <span className="font-medium">
+                              Complimentary Meals & Refreshments Provided for Both Days
+                            </span>
+                          </li>
+                        
+                          <li className="flex items-center gap-3 text-zinc-800 dark:text-zinc-200">
+                            <span className="flex h-6 w-6 items-center justify-center rounded-full bg-blue-500/10 text-xs text-blue-500">
+                              ✓
+                            </span>
+                            <span className="font-medium">
+                              Official MLAS 4.0 Commemorative T-Shirt & Swag Kit
+                            </span>
+                          </li>
                         </ul>
                     </div>
 
