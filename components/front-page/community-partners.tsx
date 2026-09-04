@@ -1,3 +1,5 @@
+import partners from '../../data/comm-partners.json'
+
 export default function CommunityPartnerSection() {
   return (
     <section
@@ -16,22 +18,23 @@ export default function CommunityPartnerSection() {
 
         {/* Partners Grid */}
         <div className="flex flex-wrap items-center justify-center gap-12">
-          
-          {/* Transparent / Minimal Partner Card */}
-          <div className="flex flex-col items-center justify-center text-center group">
-            <img
-              src="/sponsors/mlkol-logo.webp"
-              alt="ML Kolkata Logo"
-              className="w-28 h-28 object-cover rounded-md mb-4 shadow-sm transition-transform duration-300 group-hover:scale-105"
-            />
-            <h3 className="text-xl font-bold text-zinc-900 dark:text-white leading-tight">
-              ML Kolkata
-            </h3>
-          </div>
-
-          {/* Add future partner cards here */}
-
+          {partners.map((partner) => (
+            <div
+              key={partner.name}
+              className="flex flex-col items-center justify-center text-center group"
+            >
+              <img
+                src={partner.image}
+                alt={partner.alt}
+                className="w-28 h-28 object-cover rounded-md mb-4 shadow-sm transition-transform duration-300 group-hover:scale-105"
+              />
+              <h3 className="text-xl font-bold text-zinc-900 dark:text-white leading-tight">
+                {partner.name}
+              </h3>
+            </div>
+          ))}
         </div>
+
       </div>
     </section>
   );
