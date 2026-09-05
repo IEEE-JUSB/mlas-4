@@ -1,0 +1,23 @@
+[
+  {
+    "id": 1,
+    "image": "/speakers/aayush.jpg",
+    "name": "Aayush Sugandh",
+    "designation": ["Data Scientist @ Aviso.AI", "MTech AI, IIT KGP"],
+    "linkedinUrl": "https://www.linkedin.com/in/aayush-sugandh-785181190/"
+  },
+  {
+    "id": 2,
+    "image": "/speakers/sitam.jpg",
+    "name": "Sitam Meur",
+    "designation": ["AI Engineer @ Daily dose of Data Science"],
+    "linkedinUrl": "https://www.linkedin.com/in/sitammeur"
+  },
+  {
+    "id": 3,
+    "image": "/speakers/srishti.jpg",
+    "name": "Srishti Majumder",
+    "designation": ["Functional Consultant @ Accenture", "Ex-System Engineer @ TCS"],
+    "linkedinUrl": " https://www.linkedin.com/in/srishti-majumder/"
+  }
+]

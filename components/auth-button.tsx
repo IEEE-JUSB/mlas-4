@@ -17,7 +17,7 @@ export async function AuthButton() {
 
   return user ? (
     <div className="flex items-center gap-4 text-black dark:text-white">
-      Hey, {firstName}!
+      {/* Hey, {firstName}! */}
       <Link
         href="/dashboard"
         className="group inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-purple-500 to-cyan-400 px-7 py-2.5 text-sm font-semibold transition-transform hover:scale-105 duration-300 text-black"
