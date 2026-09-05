@@ -1,0 +1,23 @@
+[
+  {
+    "id": 1,
+    "image": "/speakers/aayush.jpg",
+    "name": "Aayush Sugandh",
+    "designation": ["Data Scientist @ Aviso.AI", "MTech AI, IIT KGP"],
+    "linkedinUrl": "https://www.linkedin.com/in/aayush-sugandh-785181190/"
+  },
+  {
+    "id": 2,
+    "image": "/speakers/no-face.jpg",
+    "name": "Coming Soon!",
+    "designation": [""],
+    "linkedinUrl": ""
+  },
+  {
+    "id": 3,
+    "image": "/speakers/no-face.jpg",
+    "name": "Coming Soon!",
+    "designation": [""],
+    "linkedinUrl": ""
+  }
+]

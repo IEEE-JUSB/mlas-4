@@ -12,6 +12,7 @@ const NAV_LINKS = [
   { label: "Home", href: "/#" },
   { label: "About", href: "/#about" },
   { label: "Community Partners", href: "/#comm-partners" },
+  { label: "Speakers", href: "/#speakers" },
   { label: "Timeline", href: "/#timeline" },
   { label: "FAQ", href: "/#faq" },
   { label: "Contact", href: "/#contact" },
