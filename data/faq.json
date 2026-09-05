@@ -1,0 +1,37 @@
+[
+  {
+    "id": 1,
+    "question": "What is MLAS 4.0?",
+    "answer": "MLAS 4.0 (Machine Learning Accelerator Summit 4.0) is a two-day hands-on workshop and summit organized by IEEE Jadavpur University Student Branch focusing on LLMs, ReAct agents, LangGraph orchestration, and MCP."
+  },
+  {
+    "id": 2,
+    "question": "When and where is MLAS 4.0 taking place?",
+    "answer": "The event takes place on 12th & 13th September, from 10:00 AM to 5:00 PM, at the TEQIP Building, Jadavpur University (Jadavpur Campus), Kolkata."
+  },
+  {
+    "id": 3,
+    "question": "What is the registration fee for MLAS 4.0?",
+    "answer": "The registration fee is ₹549 for IEEE members and ₹649 for non-IEEE members."
+  },
+  {
+    "id": 4,
+    "question": "What is included with the registration fee?",
+    "answer": "The registration fee includes full entry to the 2-day hands-on sessions, food & refreshments, exclusive course materials, an exclusive MLAS 4.0 T-shirt, event kits, badges, and certificates."
+  },
+  {
+    "id": 5,
+    "question": "What are the prerequisites to join the summit?",
+    "answer": "Basic Python knowledge is the only prerequisite. All concepts concerning LLMs, agentic AI, and LangGraph will be taught from the ground up."
+  },
+  {
+    "id": 6,
+    "question": "What topics will be covered during the two days?",
+    "answer": "Day 1 covers LLM fundamentals, prompt engineering, context engineering, agentic AI concepts, tool calling, and building ReAct agents with LangChain. Day 2 covers multi-agent design patterns, orchestration with LangGraph, and a secret hands-on challenge."
+  },
+  {
+    "id": 7,
+    "question": "How do I register for MLAS 4.0?",
+    "answer": "You can register online through the official portal at https://mlas.ieee-jaduniv.in/."
+  }
+]
