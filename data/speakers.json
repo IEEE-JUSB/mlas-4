@@ -8,10 +8,10 @@
   },
   {
     "id": 2,
-    "image": "/speakers/no-face.jpg",
-    "name": "Coming Soon!",
-    "designation": [""],
-    "linkedinUrl": ""
+    "image": "/speakers/sitam.jpg",
+    "name": "Sitam Meur",
+    "designation": ["AI Engineer @ Daily dose of Data Science", "GSoC Contributer & Mentor"],
+    "linkedinUrl": "https://www.linkedin.com/in/sitammeur"
   },
   {
     "id": 3,
