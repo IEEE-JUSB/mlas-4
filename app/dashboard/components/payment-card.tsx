@@ -21,7 +21,7 @@ function WhatsAppIcon({ className }: { className?: string }) {
 }
 
 const WHATSAPP_GROUP_LINK = "https://chat.whatsapp.com/IWaydneUS3FJLARd75GIAn?s=cl&p=a&mlu=4";
-
+const REGISTRATION_CLOSED = true;
 type PaymentCardProps = {
   status: "completed" | "pending";
   amount: number;
@@ -120,14 +120,15 @@ export function PaymentCard({
           </div>
           <button
             disabled={
-              !isRegistrationComplete ||
-              requiresIeeeVerification ||
-              isLoading ||
-              isPaid
-            }
+                REGISTRATION_CLOSED ||
+                !isRegistrationComplete ||
+                requiresIeeeVerification ||
+                isLoading ||
+                isPaid
+              }
             onClick={handlePayment}
             className={`group/button flex items-center gap-2 rounded-md px-4 py-2.5 text-xs font-semibold text-white shadow-lg transition-all ${
-              isRegistrationComplete && !requiresIeeeVerification && !isPaid
+                !REGISTRATION_CLOSED && isRegistrationComplete && !requiresIeeeVerification && !isPaid
                 ? "bg-blue-600 shadow-blue-500/20 hover:bg-blue-700 hover:shadow-blue-500/30"
                 : "cursor-not-allowed bg-zinc-400/80 shadow-none"
             }`}
@@ -137,15 +138,17 @@ export function PaymentCard({
               style={{ minWidth: "0.875rem", minHeight: "0.875rem" }}
             />
             <span className="truncate">
-              {isLoading
-                ? "Processing..."
-                : isPaid
-                  ? "Paid"
-                  : requiresIeeeVerification
-                    ? "Awaiting IEEE Approval"
-                    : isRegistrationComplete
-                      ? "Book Your Seat"
-                      : "Complete Profile First"}
+              {isPaid
+                ? "Paid"
+              : REGISTRATION_CLOSED
+            ? "Registration Closed"
+            : isLoading
+            ? "Processing..."
+            : requiresIeeeVerification
+            ? "Awaiting IEEE Approval"
+            : isRegistrationComplete
+            ? "Book Your Seat"
+            : "Complete Profile First"}
             </span>
             {isRegistrationComplete &&
               !requiresIeeeVerification &&
