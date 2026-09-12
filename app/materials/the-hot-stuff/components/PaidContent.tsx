@@ -1,3 +1,5 @@
+import { title } from "process";
+
 const sessions = [
   //   {
   //     id: "session-1",
@@ -44,6 +46,13 @@ const sessions = [
     title: "Session 2",
     summary: "Access the contents for session 2 below!",
     fileName: "slot-2.zip",
+    detail: "All hail the AI!",
+  },
+  {
+    id: "session-3",
+    title: "Session 3",
+    summary: "Access the contents for session 3 below!",
+    fileName: "slot-3.zip",
     detail: "All hail the AI!",
   },
 ];
