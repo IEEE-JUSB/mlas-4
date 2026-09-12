@@ -32,12 +32,13 @@ const sessions = [
   //     detail: "Download the final session archive.",
   //   },
   {
-    id: "Coming soon.",
-    title: "Coming soon.",
+    id: "session-1",
+    title: "Session 1",
     summary:
-      "The remaining sessions will be added to this page as they become available.",
-    fileName: "coming-soon.zip",
-    detail: "Stay tuned for more content!",
+      "Access the contents for session 1 below!",
+    fileName: "Stay tuned for the next slots!",
+    detail: "All hail the AI!",
+    link: "https://github.com/aayush101098/Machine-Learning-From-Probabilistic-Perspective/tree/main",
   },
 ];
 
@@ -84,9 +85,7 @@ export default function PaidContent() {
           Session downloads
         </h1>
         <p className="mt-3 max-w-3xl text-sm leading-6 text-slate-600 dark:text-zinc-300">
-          This page is the linkable index for the session archives. Each
-          session's content is packaged as a single zip file for download. Go
-          get that content!
+          This page is the linkable index for the session archives.
         </p>
 
         <div className="mt-5 flex flex-wrap gap-2">
@@ -135,12 +134,12 @@ export default function PaidContent() {
               </p>
             </div>
             <a
-              //   href={`/materials/the-hot-stuff/zips/${session.fileName}`}
-              href="javascript:void(0)"
-              download
+              href={session.link}
+              target="_blank"
+              rel="noopener noreferrer"
               className="inline-flex items-center justify-center rounded-full bg-slate-950 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-slate-800 dark:bg-white dark:text-slate-950 dark:hover:bg-zinc-200"
             >
-              Download zip
+              Lets go
             </a>
           </div>
         </SectionCard>
