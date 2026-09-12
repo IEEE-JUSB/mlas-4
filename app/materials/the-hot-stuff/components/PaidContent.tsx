@@ -34,11 +34,17 @@ const sessions = [
   {
     id: "session-1",
     title: "Session 1",
-    summary:
-      "Access the contents for session 1 below!",
+    summary: "Access the contents for session 1 below!",
     fileName: "Stay tuned for the next slots!",
     detail: "All hail the AI!",
     link: "https://github.com/aayush101098/Machine-Learning-From-Probabilistic-Perspective/tree/main",
+  },
+  {
+    id: "session-2",
+    title: "Session 2",
+    summary: "Access the contents for session 2 below!",
+    fileName: "slot-2.zip",
+    detail: "All hail the AI!",
   },
 ];
 
@@ -133,14 +139,24 @@ export default function PaidContent() {
                 {session.detail}
               </p>
             </div>
-            <a
-              href={session.link}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center justify-center rounded-full bg-slate-950 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-slate-800 dark:bg-white dark:text-slate-950 dark:hover:bg-zinc-200"
-            >
-              Lets go
-            </a>
+            {session.link ? (
+              <a
+                href={session.link}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center justify-center rounded-full bg-slate-950 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-slate-800 dark:bg-white dark:text-slate-950 dark:hover:bg-zinc-200"
+              >
+                Lets go
+              </a>
+            ) : (
+              <a
+                href={`/materials/the-hot-stuff/zips/${session.fileName}`}
+                download={true}
+                className="inline-flex items-center justify-center rounded-full bg-slate-950 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-slate-800 dark:bg-white dark:text-slate-950 dark:hover:bg-zinc-200"
+              >
+                Download
+              </a>
+            )}
           </div>
         </SectionCard>
       ))}
