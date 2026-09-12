@@ -21,7 +21,7 @@ export default async function MaterialsPage() {
 
   return (
     <div className="mx-auto min-h-screen max-w-4xl px-4 pb-8 pt-24 sm:px-6 sm:pt-28 lg:px-8 lg:pt-32">
-      {payment !== "completed" ? (
+      {payment === "completed" ? (
         <div className="mb-4 rounded-lg border border-rose-200 bg-gradient-to-r from-rose-50 via-red-50 to-orange-50 p-5 text-sm font-medium text-rose-900 dark:text-rose-200 dark:border-rose-800/50 dark:from-rose-950/30 dark:via-red-950/20 dark:to-orange-950/30">
           <p>
             You need to complete your payment to access the materials. Please
