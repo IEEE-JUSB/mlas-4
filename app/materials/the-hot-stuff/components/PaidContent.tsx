@@ -55,6 +55,13 @@ const sessions = [
     fileName: "slot-3.zip",
     detail: "All hail the AI!",
   },
+  {
+    id: "session-4",
+    title: "Secret Agent Challenge",
+    summary: "Access the contents for the secret agent challenge below!",
+    fileName: "Secret-Agent-Challenge.zip",
+    detail: "All hail the AI!",
+  },
 ];
 
 function SectionCard({
